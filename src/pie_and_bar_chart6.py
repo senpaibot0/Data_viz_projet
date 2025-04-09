@@ -2,9 +2,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.colors import qualitative
-import numpy as np
 
-# Colonnes de blessures
+# Injury columns
 INJURY_COLS = [
     "injuries_no_indication",
     "injuries_non_incapacitating",
@@ -19,23 +18,15 @@ def load_data(filepath):
 def prepare_pie_data(df, category_col):
     if category_col == "roadway_surface_cond":
         df = df.copy()
-        others_categories = [
-            "UNKNOWN", 
-            "SNOW OR SLUSH", 
-            "ICE", 
-            "OTHER", 
-            "SAND, MUD, DIRT"
-        ]
+        others_categories = ["UNKNOWN", "SNOW OR SLUSH", "ICE", "OTHER", "SAND, MUD, DIRT"]
         df[category_col] = df[category_col].apply(
             lambda x: "OTHERS" if str(x).strip().upper() in others_categories else x
         )
-    
     pie_df = df[category_col].value_counts().reset_index()
     pie_df.columns = [category_col, "Count"]
     return pie_df
 
 def custom_hover_template(chart_type, **kwargs):
-    """Génère des templates de tooltip personnalisés"""
     if chart_type == "pie":
         return (
             "<b>%{label}</b><br>"
@@ -45,30 +36,23 @@ def custom_hover_template(chart_type, **kwargs):
         )
     elif chart_type == "bar":
         return (
-        f"<b>{kwargs.get('injury_type', '').replace('_', ' ').title()}</b><br>"
-        "Count: %{y:,}<br>"
-        f"Category: {kwargs.get('category_name', '')}"
-        "<extra></extra>"
-    )
+            f"<b>{kwargs.get('injury_type', '').replace('_', ' ').title()}</b><br>"
+            "Count: %{y:,}<br>"
+            f"Category: {kwargs.get('category_name', '')}"
+            "<extra></extra>"
+        )
     return ""
 
 def prepare_bar_data(df, category_col):
     if category_col == "roadway_surface_cond":
         df = df.copy()
-        others_categories = [
-            "UNKNOWN", 
-            "SNOW OR SLUSH", 
-            "ICE", 
-            "OTHER", 
-            "SAND, MUD, DIRT"
-        ]
+        others_categories = ["UNKNOWN", "SNOW OR SLUSH", "ICE", "OTHER", "SAND, MUD, DIRT"]
         df[category_col] = df[category_col].apply(
             lambda x: "OTHERS" if str(x).strip().upper() in others_categories else x
         )
-    
     grouped = df.groupby(category_col)[INJURY_COLS].sum().reset_index()
     melted = grouped.melt(id_vars=category_col, var_name="Injury Type", value_name="Count")
-    melted["Count"] = melted["Count"].replace(0, 0.1)
+    melted["Count"] = melted["Count"].replace(0, 0.1)  # Avoid log scale issues
     return melted
 
 def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, bar_title):
@@ -82,7 +66,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         specs=[[{'type': 'domain'}, {'type': 'xy'}]]
     )
 
-    # PIE chart
+    # Pie chart
     fig.add_trace(
         go.Pie(
             labels=pie_data[category_col],
@@ -90,14 +74,13 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
             marker=dict(colors=[color_map[val] for val in pie_data[category_col]]),
             showlegend=True,
             hovertemplate=custom_hover_template("pie"),
-            name="",
             textinfo='percent',
             textposition='inside'
         ),
         row=1, col=1
     )
 
-    # BAR chart - légendes
+    # Bar chart - legend traces
     for i, cat in enumerate(categories):
         fig.add_trace(
             go.Bar(
@@ -111,59 +94,53 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
             ),
             row=1, col=2
         )
-    
-    # BAR chart - données
+
+    # Bar chart - data traces
     traces = []
     for j, injury in enumerate(INJURY_COLS):
         for i, cat in enumerate(categories):
             injury_data = bar_data[(bar_data[category_col] == cat) &
-                               (bar_data["Injury Type"] == injury)]
+                                   (bar_data["Injury Type"] == injury)]
             fig.add_trace(
                 go.Bar(
-                x=[injury.replace("_", " ").title()],  # Nettoyage de x
-                y=injury_data["Count"],
-                marker_color=color_map[cat],
-                showlegend=False,
-                visible=True,
-                legendgroup=cat,
-                hovertemplate=custom_hover_template(
-                    "bar",
-                    injury_type=injury,
-                    category_name=cat  # Utilisation directe de la valeur, pas le nom de colonne
+                    x=[injury.replace("_", " ").title()],
+                    y=injury_data["Count"],
+                    marker_color=color_map[cat],
+                    showlegend=False,
+                    visible=True,
+                    legendgroup=cat,
+                    hovertemplate=custom_hover_template(
+                        "bar",
+                        injury_type=injury,
+                        category_name=cat
+                    ),
+                    width=0.1
                 ),
-                width=0.1
-            ),
-            row=1, col=2
-        )
+                row=1, col=2
+            )
             traces.append((cat, injury))
 
-    # Menu déroulant
+    # Dropdown menu
     buttons = []
-
     visible_all = [True] + [True] * len(categories) + [True] * len(traces)
     buttons.append(dict(
         label="See All",
         method="update",
-        args=[{"visible": visible_all},
-              {"showlegend": True}]
+        args=[{"visible": visible_all}, {"showlegend": True}]
     ))
 
     for i, injury in enumerate(INJURY_COLS):
-        visibility = [True]
-        visibility.extend([True] * len(categories))
+        visibility = [True] + [True] * len(categories)
         visibility.extend([(inj == injury) for (cat, inj) in traces])
-        
         buttons.append(dict(
             label=injury.replace("injuries_", "").replace("_", " ").title(),
             method="update",
-            args=[{"visible": visibility},
-                  {"showlegend": True}]
+            args=[{"visible": visibility}, {"showlegend": True}]
         ))
 
-    # Configuration des axes
-    fig.update_xaxes(title_text="Type of injury", row=1, col=2)
-    fig.update_yaxes(title_text="Number of accidents (logarithmic)", type="log", row=1, col=2)
-
+    # Update layout
+    fig.update_xaxes(title_text="Type of Injury", row=1, col=2)
+    fig.update_yaxes(title_text="Number of Accidents (log)", type="log", row=1, col=2)
     fig.update_layout(
         title_text=title,
         barmode="group",
@@ -177,28 +154,11 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
             y=1.15,
             yanchor="top"
         )],
-        legend_title_text="Intersection" if category_col == "intersection_related_i" 
-                 else "Pavement condition" if category_col == "roadway_surface_cond" 
-                 else category_col.replace("_", " ").title(),
-
-        legend=dict(
-        itemclick=False) # Empêche les actions de clic sur les éléments de la légende
+        legend_title_text="Pavement Condition",
+        legend=dict(itemclick=False)
     )
 
     return fig
-
-# Fonctions spécifiques
-
-def plot_intersection_vs_injury(df):
-    category = "intersection_related_i"
-    pie_data = prepare_pie_data(df, category)
-    bar_data = prepare_bar_data(df, category)
-    return create_combined_figure(
-        pie_data, bar_data, category,
-        title="Number of accidents by presence or absence of an intersection",
-        pie_title="", #Répartition des accidents Ajouté le titre si besoin
-        bar_title="" # Types de blessures (échelle log)
-    )
 
 def plot_condition_vs_injury(df):
     category = "roadway_surface_cond"
@@ -206,16 +166,7 @@ def plot_condition_vs_injury(df):
     bar_data = prepare_bar_data(df, category)
     return create_combined_figure(
         pie_data, bar_data, category,
-        title="Number of accidents by severity of injury",
-        pie_title="", #Répartition des accidents Ajouté le titre si besoin
-        bar_title="" #Types de blessures (échelle log)
+        title="Accidents by Roadway Condition and Injury Severity",
+        pie_title="Distribution of Accidents",
+        bar_title="Injury Types (Log Scale)"
     )
-
-# Utilisation
-df = load_data("src/assets/data/traffic_accidents.csv")
-
-fig5 = plot_intersection_vs_injury(df)
-fig6 = plot_condition_vs_injury(df)
-
-fig5.show()
-fig6.show()

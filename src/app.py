@@ -1,107 +1,53 @@
-
 # -*- coding: utf-8 -*-
-
 '''
     File name: app.py
-    Author: Olivia Gélinas
+    Author: Olivia Gélinas (modified for pie/bar chart)
     Course: INF8808
     Python Version: 3.8
 
-    This file is the entry point for our dash app.
+    Entry point for the Dash app displaying pie and bar charts.
 '''
 
 import dash
 from dash import html
 from dash import dcc
-
-from dash.dependencies import Input, Output
-
 import pandas as pd
+from pie_and_bar_chart6 import plot_condition_vs_injury
+from template import create_custom_theme, set_default_theme
 
-import preprocess
-import heatmap
-import line_chart
-import template
-
-
+# Initialize the Dash app
 app = dash.Dash(__name__)
-app.title = 'TP3 | INF8808'
+app.title = 'Traffic Accidents Visualization | INF8808'
 
-dataframe = pd.read_csv('../TP3/src/assets/data/arbres.csv')
+# Load and prepare data
+dataframe = pd.read_csv('src/assets/data/traffic_accidents.csv')  
+figure = plot_condition_vs_injury(dataframe)  # Get the pie/bar chart figure
 
-dataframe = preprocess.convert_dates(dataframe)
-dataframe = preprocess.filter_years(dataframe, 2010, 2020)
-yearly_df = preprocess.summarize_yearly_counts(dataframe)
-data = preprocess.restructure_df(yearly_df)
+# Apply custom theme
+create_custom_theme()
+set_default_theme()
 
-template.create_custom_theme()
-template.set_default_theme()
-
+# Define the layout
 app.layout = html.Div(className='content', children=[
     html.Header(children=[
-        html.H1('Trees planted in Montreal neighborhoods'),
-        html.H2('From 2010 to 2020')
+        html.H1('Traffic Accidents by Roadway Condition'),
+        html.H2('Pie and Bar Chart Visualization')
     ]),
     html.Main(className='viz-container', children=[
         dcc.Graph(
-            id='heatmap',
+            id='pie-bar-chart',
             className='graph',
-            figure=heatmap.get_figure(data),
+            figure=figure,
             config=dict(
                 scrollZoom=False,
                 showTips=False,
                 showAxisDragHandles=False,
                 doubleClick=False,
-                displayModeBar=False
-            )
-        ),
-        dcc.Graph(
-            id='line-chart',
-            className='graph',
-            figure=line_chart.add_rectangle_shape(line_chart.get_empty_figure()),
-            config=dict(
-                scrollZoom=False,
-                showTips=False,
-                showAxisDragHandles=False,
-                doubleClick=False,
-                displayModeBar=False
+                displayModeBar=True  # Enable mode bar for interactivity
             )
         )
     ])
 ])
 
-
-@app.callback(
-    Output('line-chart', 'figure'),
-    [Input('heatmap', 'clickData')]
-)
-def heatmap_clicked(click_data):
-    '''
-        When a cell in the heatmap is clicked, updates the
-        line chart to show the data for the corresponding
-        neighborhood and year. If there is no data to show,
-        displays a message.
-
-        Args:
-            The necessary inputs and states to update the
-            line chart.
-        Returns:
-            The necessary output values to update the line
-            chart.
-    '''
-    if click_data is None or click_data['points'][0]['z'] == 0:
-        fig = line_chart.get_empty_figure()
-        line_chart.add_rectangle_shape(fig)
-        return fig
-
-    arrond = click_data['points'][0]['y']
-    year = click_data['points'][0]['x']
-
-    line_data = preprocess.get_daily_info(
-        dataframe,
-        arrond,
-        year)
-
-    line_fig = line_chart.get_figure(line_data, arrond, year)
-
-    return line_fig
+if __name__ == '__main__':
+    app.run_server(debug=True, port=8050)
