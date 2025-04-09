@@ -7,9 +7,6 @@ from flask_failsafe import failsafe
 def create_app():
     '''
         Gets the underlying Flask server from our Dash app.
-
-        Returns:
-            The server to be run
     '''
     from app import app  # pylint: disable=import-outside-toplevel
     return app.server
