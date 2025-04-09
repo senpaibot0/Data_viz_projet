@@ -13,6 +13,7 @@ from dash import html
 from dash import dcc
 import pandas as pd
 from pie_and_bar_chart6 import plot_condition_vs_injury
+from radar_chart2 import create_radar_charts
 from serie_temporelle import create_temporal_series
 from histogramme_type_jour import create_day_type_histogram
 from template import create_custom_theme, set_default_theme
@@ -22,12 +23,13 @@ app = dash.Dash(__name__)
 app.title = 'Traffic Accidents Dashboard | INF8808'
 
 # Load data
-dataframe = pd.read_csv('src/assets/data/traffic_accidents.csv')  # Adjust path as needed
+dataframe = pd.read_csv('./assets/data/traffic_accidents.csv')  # Adjust path as needed
 
 # Generate figures
 pie_bar_fig = plot_condition_vs_injury(dataframe)
 temporal_fig = create_temporal_series(dataframe)
 histogram_fig = create_day_type_histogram(dataframe)
+radar_fig = create_radar_charts(dataframe)
 
 # Apply custom theme
 create_custom_theme()
@@ -84,7 +86,21 @@ app.layout = html.Div(className='content', children=[
                     displayModeBar=True
                 )
             )
-        ])
+        ]),
+        html.Div(children=[
+            html.H3("Accidents selon les conditions d'éclairage et de météo"),
+            html.Div(
+                children=create_radar_charts(dataframe),
+                style={
+                    'display': 'flex',
+                    'flexDirection': 'row',
+                    'justifyContent': 'space-evenly',
+                    'flexWrap': 'nowrap',  # Set to 'wrap' if too many charts overflow
+                    'overflowX': 'auto',  # Optional: allow scrolling if too many charts
+                    'gap': '20px'
+                }
+            )
+        ]),    
     ])
 ])
 
