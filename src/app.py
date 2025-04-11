@@ -17,6 +17,7 @@ from radar_chart2 import create_radar_charts
 from serie_temporelle import create_temporal_series
 from histogramme_type_jour import create_day_type_histogram
 from template import create_custom_theme, set_default_theme
+from heatmap import get_figure as get_heatmap_figure
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -30,6 +31,7 @@ pie_bar_fig = plot_condition_vs_injury(dataframe)
 temporal_fig = create_temporal_series(dataframe)
 histogram_fig = create_day_type_histogram(dataframe)
 radar_fig = create_radar_charts(dataframe)
+heatmap_fig = get_heatmap_figure(dataframe)
 
 # Apply custom theme
 create_custom_theme()
@@ -100,9 +102,24 @@ app.layout = html.Div(className='content', children=[
                     'gap': '20px'
                 }
             )
+        ]),
+        html.Div(children=[
+        html.H3('Matrice de chaleur des accidents par type de collision et gravité des blessures'),
+        dcc.Graph(
+            id='heatmap-chart',
+            className='graph',
+            figure=heatmap_fig,
+            config=dict(
+                scrollZoom=False,
+                showTips=False,
+                showAxisDragHandles=False,
+                doubleClick=False,
+                displayModeBar=True
+                )
+            )
         ]),    
     ])
 ])
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run(debug=True, port=8050)
