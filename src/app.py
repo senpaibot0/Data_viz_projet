@@ -23,7 +23,7 @@ app = dash.Dash(__name__)
 app.title = 'Traffic Accidents Dashboard | INF8808'
 
 # Load data
-dataframe = pd.read_csv('./assets/data/traffic_accidents.csv')  # Adjust path as needed
+dataframe = pd.read_csv('src/assets/data/traffic_accidents.csv')  # Adjust path as needed
 
 # Generate figures
 pie_bar_fig = plot_condition_vs_injury(dataframe)
