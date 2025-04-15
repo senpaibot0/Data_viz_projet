@@ -26,7 +26,7 @@ app.title = 'Traffic Accidents Dashboard | INF8808'
 # # Load data
 # dataframe = pd.read_csv('src/assets/data/traffic_accidents.csv')  # Adjust path as needed
 import os
-csv_path = os.path.join(os.path.dirname(__file__), 'assets/data/traffic_accidents.csv')
+csv_path = os.path.join(os.path.dirname(__file__), 'src/assets/data/traffic_accidents.csv')
 dataframe = pd.read_csv(csv_path)
 
 
