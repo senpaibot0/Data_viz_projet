@@ -23,8 +23,12 @@ from heatmap import get_figure as get_heatmap_figure
 app = dash.Dash(__name__)
 app.title = 'Traffic Accidents Dashboard | INF8808'
 
-# Load data
-dataframe = pd.read_csv('src/assets/data/traffic_accidents.csv')  # Adjust path as needed
+# # Load data
+# dataframe = pd.read_csv('src/assets/data/traffic_accidents.csv')  # Adjust path as needed
+import os
+csv_path = os.path.join(os.path.dirname(__file__), 'assets/data/traffic_accidents.csv')
+dataframe = pd.read_csv(csv_path)
+
 
 # Generate figures
 pie_bar_fig = plot_condition_vs_injury(dataframe)
