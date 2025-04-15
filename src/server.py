@@ -12,4 +12,5 @@ def create_app():
     return app.server
 
 if __name__ == "__main__":
-    create_app().run(port="8050", debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Port dynamique donné par Render
+    create_app().run(host="0.0.0.0", port=port, debug=True)
