@@ -3,7 +3,8 @@
 '''
 from flask_failsafe import failsafe
 
-@failsafe('/index')
+from flask import app
+@app.route('/')
 def create_app(*args, **kwargs):
     '''
         Gets the underlying Flask server from our Dash app.
