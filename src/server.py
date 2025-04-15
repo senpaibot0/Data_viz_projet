@@ -4,7 +4,7 @@
 from flask_failsafe import failsafe
 
 @failsafe
-def create_app():
+def create_app(*args, **kwargs):
     '''
         Gets the underlying Flask server from our Dash app.
     '''
