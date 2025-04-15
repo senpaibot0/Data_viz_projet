@@ -13,6 +13,6 @@ def create_app(*args, **kwargs):
 
 if __name__ == "__main__":
     import os
-    port = 10000
+    port = 80
     print(f"✅ Starting server on port {port}")
     create_app().run(host="0.0.0.0", port=port, debug=True)
