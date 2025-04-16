@@ -51,8 +51,8 @@ def create_day_type_histogram(df):
     fig.update_yaxes(title_text="Moyenne d'accidents par jour")
 
     fig.update_layout(
-        title="Histogramme normalisé des accidents selon le type de jour",
-        height=600,
+        title="",
+        height=500,
         width=800,
         showlegend=False,
         margin=dict(l=50, r=50, t=100, b=50)

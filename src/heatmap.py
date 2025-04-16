@@ -95,7 +95,7 @@ def create_heatmap(df):
     
     # Mettre à jour la mise en page avec des options simplifiées
     fig.update_layout(
-        title="Matrice de chaleur des accidents par type de collision et gravité des blessures",
+        title="",
         xaxis_title="Type de blessure",
         yaxis_title="Type de collision",
         xaxis_tickangle=-45,

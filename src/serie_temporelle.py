@@ -38,9 +38,9 @@ def create_temporal_series(df):
     fig.add_trace(go.Scatter(x=year_counts.index, y=year_counts.values, mode='lines+markers', name='Par année', line=dict(width=2)), row=2, col=2)
 
     fig.update_layout(
-        title="Séries temporelles des accidents de la route",
-        height=800,
-        width=1400,
+        title="",
+        height=700,
+        width=1100,
         showlegend=False,
         margin=dict(l=50, r=50, t=100, b=50)
     )

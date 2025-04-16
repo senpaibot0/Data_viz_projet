@@ -3,7 +3,10 @@
 '''
 from flask_failsafe import failsafe
 
-from flask import app
+from flask import Flask #app
+
+app = Flask(__name__)
+
 @app.route('/')
 def create_app(*args, **kwargs):
     '''
@@ -16,4 +19,4 @@ if __name__ == "__main__":
     import os
     port = 9999
     print(f"✅ Starting server on port {port}")
-    create_app().run(host="0.0.0.0", port=port, debug=False)
+    create_app().run(host="0.0.0.0", port=port, debug=False) #False

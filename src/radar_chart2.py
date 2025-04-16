@@ -50,16 +50,6 @@ def create_radar_charts(df):
         categories = radar_data.columns.tolist()
         categories.append(categories[0])
 
-        # Print the values for debugging
-        # print(f"Lighting Condition: {lighting_condition}")
-        # subtotal = 0
-        # for category, value in zip(categories, values):
-        #     subtotal += value
-        #     print(f"   {category}: {value}")
-        #     print(f"   SUBTOTAL: {value}")
-
-        # total += subtotal
-
         fig = go.Figure()
 
         fig.add_trace(go.Scatterpolar(
@@ -92,10 +82,10 @@ def create_radar_charts(df):
                     displayModeBar=True,
                     displaylogo=False
                 ),
-                style={'height': '400px', 'marginBottom': '40px'}
-            )
+                style={
+                    'height': 'auto',
+                    'width': '30%',
+                })
         )
-
-    # print(f"   TOTAL: {total}")
 
     return charts
