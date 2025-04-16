@@ -36,7 +36,7 @@ def create_day_type_histogram(df):
         else:
             normalized_data[day_type] = 0
 
-    fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'bar'}]], subplot_titles=["Moyenne d'accidents par type de jour"])
+    fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'bar'}]], subplot_titles=[""])
 
     trace = go.Bar(
         x=list(normalized_data.keys()),

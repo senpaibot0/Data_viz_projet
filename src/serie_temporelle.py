@@ -21,7 +21,7 @@ def create_temporal_series(df):
         specs=[[{'type': 'scatter'}, {'type': 'scatter'}],
                [{'type': 'scatter'}, {'type': 'scatter'}]],
         subplot_titles=('Par heure', 'Par jour de semaine', 'Par mois', 'Par année'),
-        vertical_spacing=0.12,
+        vertical_spacing=0.2,
         horizontal_spacing=0.08
     )
 
@@ -40,7 +40,7 @@ def create_temporal_series(df):
     fig.update_layout(
         title="",
         height=700,
-        width=1100,
+        width=1000,
         showlegend=False,
         margin=dict(l=50, r=50, t=100, b=50)
     )

@@ -2,6 +2,23 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc
 
+
+LIGHTING_TRANSLATIONS = {
+    "DAYLIGHT": "Plein jour",
+    "DARKNESS, LIGHTED ROAD": "Nuit, route éclairée",
+    "DARKNESS": "Nuit, route sombre",
+    "DUSK": "Crépuscule",
+    "UNKNOWN": "Inconnu"
+}
+
+WEATHER_TRANSLATIONS = {
+    "CLEAR": "Dégagé",
+    "RAIN": "Pluie",
+    "CLOUDY/OVERCAST": "Nuageux",
+    "SNOW": "Neige",
+    "UNKNOWN": "Inconnu"
+}
+
 LIGHTING_CONDITIONS = [
     "DAYLIGHT", 
     "DARKNESS, LIGHTED ROAD", 
@@ -42,36 +59,39 @@ def create_radar_charts(df):
     radar_data = prepare_radar_data(df)
     charts = []
 
-    # total = 0
-        
     for lighting_condition in radar_data.index:
         values = radar_data.loc[lighting_condition].tolist()
         values.append(values[0])  # Ferme le cercle
+
+        # Traduction des catégories météo
         categories = radar_data.columns.tolist()
-        categories.append(categories[0])
+        translated_categories = [WEATHER_TRANSLATIONS[c] for c in categories]
+        translated_categories.append(translated_categories[0])  # Fermer le cercle aussi ici
 
         fig = go.Figure()
 
         fig.add_trace(go.Scatterpolar(
             r=values,
-            theta=categories,
+            theta=translated_categories,
             fill='toself',
-            name=lighting_condition,
+            name=LIGHTING_TRANSLATIONS.get(lighting_condition, lighting_condition),
             hoverinfo='text',
-            text=[f"{cat}: {val}" for cat, val in zip(categories, values)]
+            text=[
+                f"{cat}: {val}" for cat, val in zip(translated_categories, values)
+            ]
         ))
 
-        max_value = max(values[:-1])  # Exclude the repeated first value
+        max_value = max(values[:-1])
         fig.update_layout(
-            title=f"{lighting_condition.title()}",
+            title=LIGHTING_TRANSLATIONS.get(lighting_condition, lighting_condition),
             polar=dict(
                 radialaxis=dict(
                     visible=True,
-                    range=[0, max_value * 1.1]  # Dynamic per chart
+                    range=[0, max_value * 1.1]
                 )
             ),
             showlegend=False,
-            margin=dict(l=30, r=30, t=50, b=30)
+            margin=dict(l=50, r=50, t=50, b=30)
         )
 
         charts.append(
@@ -83,7 +103,7 @@ def create_radar_charts(df):
                     displaylogo=False
                 ),
                 style={
-                    'height': 'auto',
+                    'height': '20rem',
                     'width': '30%',
                 })
         )

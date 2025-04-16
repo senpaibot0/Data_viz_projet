@@ -10,6 +10,23 @@ COLLISION_TYPES = ['Turning', 'Angle', 'Rear end', 'Sideswipe (same direction)',
 INJURY_TYPES = ['No indication of injury', 'Non-incapacitating injury', 'Reported, not evident', 
                 'Incapacitating injury', 'Fatal']
 
+COLLISION_TRANSLATIONS = {
+    'Turning': 'En tournant',
+    'Angle': 'En angle',
+    'Rear end': 'Arrière',
+    'Sideswipe (same direction)': 'Latérale',
+    'Pedestrian': 'Piétonne'
+}
+
+INJURY_TRANSLATIONS = {
+    'No indication of injury': 'Aucune blessure',
+    'Non-incapacitating injury': 'Non incapacitante',
+    'Reported, not evident': 'Déclarée, non visible',
+    'Incapacitating injury': 'Incapacitante',
+    'Fatal': 'Mortelle'
+}
+
+
 def prepare_heatmap_data(df):
     '''
     Prépare les données pour la heatmap en comptant le nombre d'accidents 
@@ -81,19 +98,20 @@ def create_heatmap(df):
     Crée une matrice de chaleur (heatmap) montrant le nombre d'accidents 
     par type de collision et type de blessure.
     '''
-    # Préparer les données
     heatmap_data = prepare_heatmap_data(df)
-    
-    # Créer la figure
+
+    # Traduction des étiquettes
+    translated_x = [INJURY_TRANSLATIONS[x] for x in heatmap_data.columns]
+    translated_y = [COLLISION_TRANSLATIONS[y] for y in heatmap_data.index]
+
     fig = go.Figure(data=go.Heatmap(
         z=heatmap_data.values,
-        x=INJURY_TYPES,
-        y=COLLISION_TYPES,
+        x=translated_x,
+        y=translated_y,
         colorscale='Blues',
         hovertemplate='Type de collision: %{y}<br>Type de blessure: %{x}<br>Nombre d\'accidents: %{z}<extra></extra>'
     ))
-    
-    # Mettre à jour la mise en page avec des options simplifiées
+
     fig.update_layout(
         title="",
         xaxis_title="Type de blessure",
@@ -102,7 +120,7 @@ def create_heatmap(df):
         height=600,
         width=1000
     )
-    
+
     return fig
 
 def get_figure(df):

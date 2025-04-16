@@ -44,79 +44,77 @@ create_custom_theme()
 set_default_theme()
 
 # Define the layout
-app.layout = html.Div(className='content', children=[
-    html.Header(children=[
-        html.H1('Traffic Accidents Dashboard'),
-        html.H2('Visualizing Accident Patterns')
-    ]),
-    html.Div(children=[
-        html.H3('Série temporelle des accidents de la route'),
-        dcc.Graph(
-            id='temporal-series',
-            className='graph',
-            figure=temporal_fig,
-            config=dict(
-                scrollZoom=False,
-                showTips=False,
-                showAxisDragHandles=False,
-                doubleClick=False,
-                displayModeBar=True
-            )
-        )
-    ]),
-    html.Div(children=[
-        html.H3('Moyenne des accidents selon le type de jour'),
-        dcc.Graph(
-            id='day-type-histogram',
-            className='graph',
-            figure=histogram_fig,
-            config=dict(
-                scrollZoom=False,
-                showTips=False,
-                showAxisDragHandles=False,
-                doubleClick=False,
-                displayModeBar=True
-            )
-        )
-    ]),
-    html.Div(className='graph', children=[
-        html.H3("Nombre d'accidents selon les conditions d'éclairage et de météo"),
+app.layout = html.Div(
+    className='content', 
+    children=[
+        html.Header(
+            children=[
+                html.H1('Dashboard des accidents de la route'),
+                html.H2('Visualiser les tendances des accidents de la route')
+            ]
+        ),
         html.Div(
-            children=create_radar_charts(dataframe),
-            style={
-                'display': 'flex',
-                'flexDirection': 'row',
-                'justifyContent': 'space-evenly',
-                'flexWrap': 'wrap',  # Set to 'wrap' if too many charts overflow
-                'gap': '20px',
-                'width': '100%',
-
-            }   
-        )
-    ]),
-    html.Div(children=[
-        html.H3('Matrice de chaleur des accidents par type de collision et gravité des blessures'),
-        dcc.Graph(
-            id='heatmap-chart',
-            className='graph',
-            figure=heatmap_fig,
-            config=dict(
-                scrollZoom=False,
-                showTips=False,
-                showAxisDragHandles=False,
-                doubleClick=False,
-                displayModeBar=True
-                )
-            )
-    ]),
-    html.Div(
-        children=[
-            html.H3("Nombre d'accidents selon la gravité des blessures et la condition de la chaussée"),
-            html.Div(
-                children=dcc.Graph(
-                    id='pie-bar1-chart',
+            className='chart-container',
+            children=[
+                html.H3('Série temporelle des accidents de la route'),
+                dcc.Graph(
+                    id='temporal-series',
                     className='graph',
-                    figure=pie_bar_fig,
+                    figure=temporal_fig,
+                    config=dict(
+                        scrollZoom=False,
+                        showTips=False,
+                        showAxisDragHandles=False,
+                        doubleClick=False,
+                        displayModeBar=True
+                    )
+                )
+            ]
+        ),
+        html.Div(
+            className='chart-container',
+            children=[
+                html.H3('Moyenne des accidents selon le type de jour'),
+                dcc.Graph(
+                    id='day-type-histogram',
+                    className='graph',
+                    figure=histogram_fig,
+                    config=dict(
+                        scrollZoom=False,
+                        showTips=False,
+                        showAxisDragHandles=False,
+                        doubleClick=False,
+                        displayModeBar=True
+                    )
+                )
+            ]
+        ),
+        html.Div(
+            className='chart-container',
+            children=[
+                html.H3("Nombre d'accidents selon les conditions d'éclairage et de météo"),
+                html.Div(
+                    children=create_radar_charts(dataframe),
+                    style={
+                        'display': 'flex',
+                        'flexDirection': 'row',
+                        'justifyContent': 'space-evenly',
+                        'flexWrap': 'wrap',  # Set to 'wrap' if too many charts overflow
+                        'gap': '20px',
+                        'width': '100%',
+
+                    }   
+                )
+            ]
+        ),
+        html.Div(
+            className='chart-container',
+            children=[
+                html.H3('Matrice de chaleur des accidents par type de collision et gravité des blessures'),
+                dcc.Graph(
+                    id='heatmap-chart',
+                    className='graph',
+                    figure=heatmap_fig,
                     config=dict(
                         scrollZoom=False,
                         showTips=False,
@@ -125,24 +123,46 @@ app.layout = html.Div(className='content', children=[
                         displayModeBar=True
                     )
                 ),
+            ]
+        ),
+        html.Div(
+            className='chart-container',
+            children=[  
+                html.H3("Nombre d'accidents selon la gravité des blessures et la condition de la chaussée"),
+                html.Div(
+                    children=dcc.Graph(
+                        id='pie-bar1-chart',
+                        className='graph',
+                        figure=pie_bar_fig,
+                        config=dict(
+                            scrollZoom=False,
+                            showTips=False,
+                            showAxisDragHandles=False,
+                            doubleClick=False,
+                            displayModeBar=True
+                        )
+                    ),
+                )
+            ]
+        ),
+        html.Div(
+        className='chart-container',
+        children=[
+            html.H3("Nombre d'accidents selon la gravité des blessures et la présence/absence d'intersection"),
+            dcc.Graph(
+                id='pie-bar2-chart',
+                className='graph',
+                figure=pie_bar2_fig,
+                config=dict(
+                    scrollZoom=False,
+                    showTips=False,
+                    showAxisDragHandles=False,
+                    doubleClick=False,
+                    displayModeBar=True
+                )
             )
         ]
-    ),
-    html.Div(children=[
-        html.H3("Nombre d'accidents selon la gravité des blessures et la présence/absence d'intersection"),
-        dcc.Graph(
-            id='pie-bar2-chart',
-            className='graph',
-            figure=pie_bar2_fig,
-            config=dict(
-                scrollZoom=False,
-                showTips=False,
-                showAxisDragHandles=False,
-                doubleClick=False,
-                displayModeBar=True
-            )
-        )
-    ])
+    )
 ],
 style={
     'display': 'flex',

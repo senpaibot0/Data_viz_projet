@@ -13,6 +13,32 @@ INJURY_COLS = [
     "injuries_fatal"
 ]
 
+INJURY_TRANSLATIONS = {
+    "injuries_no_indication": "Aucune blessure",
+    "injuries_non_incapacitating": "Non incapacitante",
+    "injuries_reported_not_evident": "Déclarée, non visible",
+    "injuries_incapacitating": "Incapacitante",
+    "injuries_fatal": "Mortelle"
+}
+
+ROAD_COND_TRANSLATIONS = {
+    "DRY": "Sec",
+    "WET": "Mouillé",
+    "SNOW OR SLUSH": "Neige ou gadoue",
+    "ICE": "Verglas",
+    "SAND, MUD, DIRT": "Sable, boue ou terre",
+    "OTHER": "Autre",
+    "UNKNOWN": "Inconnu",
+    "OTHERS": "Autres"
+}
+
+INTERSECTION_TRANSLATIONS = {
+    "Y": "Oui",
+    "N": "Non",
+    "UNKNOWN": "Inconnu"
+}
+
+
 def load_data(filepath):
     return pd.read_csv(filepath)
 
@@ -39,15 +65,15 @@ def custom_hover_template(chart_type, **kwargs):
     if chart_type == "pie":
         return (
             "<b>%{label}</b><br>"
-            "Count: %{value:,}<br>"
-            "Percentage: %{percent:.1%}"
+            "Nombre : %{value:,}<br>"
+            "Pourcentage : %{percent:.1%}"
             "<extra></extra>"
         )
     elif chart_type == "bar":
         return (
-        f"<b>{kwargs.get('injury_type', '').replace('_', ' ').title()}</b><br>"
-        "Count: %{y:,}<br>"
-        f"Category: {kwargs.get('category_name', '')}"
+        f"<b>{INJURY_TRANSLATIONS.get(kwargs.get('injury_type', ''), '').title()}</b><br>"
+        "Nombre : %{y:,}<br>"
+        f"Catégorie : {kwargs.get('category_name', '')}"
         "<extra></extra>"
     )
     return ""
@@ -73,8 +99,14 @@ def prepare_bar_data(df, category_col):
 
 def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, bar_title):
     categories = pie_data[category_col].tolist()
-    colors = qualitative.Plotly[:len(categories)]
-    color_map = dict(zip(categories, colors))
+    if category_col == "roadway_surface_cond":
+        translated_categories = [ROAD_COND_TRANSLATIONS.get(cat.upper(), cat) for cat in categories]
+    elif category_col == "intersection_related_i":
+        translated_categories = [INTERSECTION_TRANSLATIONS.get(cat.upper(), cat) for cat in categories]
+    else:
+        translated_categories = categories  # fallback pour les autres cas
+
+    color_map = dict(zip(translated_categories, qualitative.Plotly[:len(translated_categories)]))
 
     fig = make_subplots(
         rows=1, cols=2,
@@ -83,11 +115,17 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     )
 
     # PIE chart
+    if category_col == "roadway_surface_cond":
+        translated_labels = [ROAD_COND_TRANSLATIONS.get(val.upper(), val) for val in pie_data[category_col]]
+    elif category_col == "intersection_related_i":
+        translated_labels = [INTERSECTION_TRANSLATIONS.get(val.upper(), val) for val in pie_data[category_col]]
+    else:
+        translated_labels = pie_data[category_col]
     fig.add_trace(
         go.Pie(
-            labels=pie_data[category_col],
+            labels=translated_labels,
             values=pie_data["Count"],
-            marker=dict(colors=[color_map[val] for val in pie_data[category_col]]),
+            marker=dict(colors=[color_map[val] for val in translated_labels]),
             showlegend=True,
             hovertemplate=custom_hover_template("pie"),
             name="",
@@ -98,7 +136,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     )
 
     # BAR chart - légendes
-    for i, cat in enumerate(categories):
+    for i, cat in enumerate(translated_categories):
         fig.add_trace(
             go.Bar(
                 x=[],
@@ -115,12 +153,12 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     # BAR chart - données
     traces = []
     for j, injury in enumerate(INJURY_COLS):
-        for i, cat in enumerate(categories):
+        for i, cat in enumerate(translated_categories):
             injury_data = bar_data[(bar_data[category_col] == cat) &
                                (bar_data["Injury Type"] == injury)]
             fig.add_trace(
                 go.Bar(
-                x=[injury.replace("_", " ").title()],  # Nettoyage de x
+                x=[INJURY_TRANSLATIONS[injury]],  # Nettoyage de x
                 y=injury_data["Count"],
                 marker_color=color_map[cat],
                 showlegend=False,
@@ -129,7 +167,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
                 hovertemplate=custom_hover_template(
                     "bar",
                     injury_type=injury,
-                    category_name=cat  # Utilisation directe de la valeur, pas le nom de colonne
+                    category_name=translated_categories[i]  # Utilisation directe de la valeur, pas le nom de colonne
                 ),
                 width=0.1
             ),
@@ -140,7 +178,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     # Menu déroulant
     buttons = []
 
-    visible_all = [True] + [True] * len(categories) + [True] * len(traces)
+    visible_all = [True] + [True] * len(translated_categories) + [True] * len(traces)
     buttons.append(dict(
         label="See All",
         method="update",
@@ -150,19 +188,19 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
 
     for i, injury in enumerate(INJURY_COLS):
         visibility = [True]
-        visibility.extend([True] * len(categories))
+        visibility.extend([True] * len(translated_categories))
         visibility.extend([(inj == injury) for (cat, inj) in traces])
         
         buttons.append(dict(
-            label=injury.replace("injuries_", "").replace("_", " ").title(),
+            label=INJURY_TRANSLATIONS[injury],
             method="update",
             args=[{"visible": visibility},
                   {"showlegend": True}]
         ))
 
     # Configuration des axes
-    fig.update_xaxes(title_text="Type of injury", row=1, col=2)
-    fig.update_yaxes(title_text="Number of accidents (logarithmic)", type="log", row=1, col=2)
+    fig.update_xaxes(title_text="Type de blessure", row=1, col=2)
+    fig.update_yaxes(title_text="Nombre d'accidents (logarithmique)", type="log", row=1, col=2)
 
     fig.update_layout(
         title_text=title,
@@ -178,7 +216,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
             yanchor="top"
         )],
         legend_title_text="Intersection" if category_col == "intersection_related_i" 
-                 else "Pavement condition" if category_col == "roadway_surface_cond" 
+                 else "Condition de la chaussée" if category_col == "roadway_surface_cond" 
                  else category_col.replace("_", " ").title(),
 
         legend=dict(
@@ -193,6 +231,8 @@ def plot_intersection_vs_injury(df):
     category = "intersection_related_i"
     pie_data = prepare_pie_data(df, category)
     bar_data = prepare_bar_data(df, category)
+    if category == "intersection_related_i":
+        bar_data[category] = bar_data[category].apply(lambda x: INTERSECTION_TRANSLATIONS.get(str(x).upper(), x))
     return create_combined_figure(
         pie_data, bar_data, category,
         title="",
@@ -204,6 +244,8 @@ def plot_condition_vs_injury(df):
     category = "roadway_surface_cond"
     pie_data = prepare_pie_data(df, category)
     bar_data = prepare_bar_data(df, category)
+    if category == "roadway_surface_cond":
+        bar_data[category] = bar_data[category].apply(lambda x: ROAD_COND_TRANSLATIONS.get(x.upper(), x))
     return create_combined_figure(
         pie_data, bar_data, category,
         title="",
