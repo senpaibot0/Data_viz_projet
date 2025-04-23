@@ -92,7 +92,7 @@ app.layout = html.Div(
         html.Div(
             className='chart-container',
             children=[
-                html.H3("Nombre d'accidents selon les conditions d'éclairage et de météo"),
+                html.H3("Nombre et gravité des accidents selon les conditions d'éclairage et de météo"),
                 html.Div(
                     children=create_radar_charts(dataframe)[0],
                     style={
