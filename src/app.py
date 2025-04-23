@@ -94,7 +94,7 @@ app.layout = html.Div(
             children=[
                 html.H3("Nombre d'accidents selon les conditions d'éclairage et de météo"),
                 html.Div(
-                    children=create_radar_charts(dataframe),
+                    children=create_radar_charts(dataframe)[0],
                     style={
                         'display': 'flex',
                         'flexDirection': 'row',
@@ -102,7 +102,17 @@ app.layout = html.Div(
                         'flexWrap': 'wrap',  # Set to 'wrap' if too many charts overflow
                         'gap': '20px',
                         'width': '100%',
-
+                    }   
+                ),
+                html.Div(
+                    children=create_radar_charts(dataframe)[1:],
+                    style={
+                        'display': 'flex',
+                        'flexDirection': 'row',
+                        'justifyContent': 'space-evenly',
+                        'flexWrap': 'wrap',  # Set to 'wrap' if too many charts overflow
+                        'gap': '20px',
+                        'width': '100%',
                     }   
                 )
             ]

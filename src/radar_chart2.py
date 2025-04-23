@@ -2,13 +2,27 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc
 
+INJURY_TRANSLATIONS = {
+    "injuries_no_indication": "Aucune blessure",
+    "injuries_non_incapacitating": "Non incapacitante",
+    "injuries_reported_not_evident": "Déclarée, non visible",
+    "injuries_incapacitating": "Incapacitante",
+    "injuries_fatal": "Mortelle"
+}
+
+INJURY_COLORS = {
+    "injuries_no_indication": "#1f77b4",        # bleu
+    "injuries_non_incapacitating": "#2ca02c",   # vert
+    "injuries_reported_not_evident": "#ff7f0e", # orange
+    "injuries_incapacitating": "#d62728",       # rouge clair
+    "injuries_fatal": "#8B0000"                 # rouge foncé
+}
 
 LIGHTING_TRANSLATIONS = {
     "DAYLIGHT": "Plein jour",
     "DARKNESS, LIGHTED ROAD": "Nuit, route éclairée",
     "DARKNESS": "Nuit, route sombre",
     "DUSK": "Crépuscule",
-    "UNKNOWN": "Inconnu"
 }
 
 WEATHER_TRANSLATIONS = {
@@ -16,7 +30,6 @@ WEATHER_TRANSLATIONS = {
     "RAIN": "Pluie",
     "CLOUDY/OVERCAST": "Nuageux",
     "SNOW": "Neige",
-    "UNKNOWN": "Inconnu"
 }
 
 LIGHTING_CONDITIONS = [
@@ -24,7 +37,6 @@ LIGHTING_CONDITIONS = [
     "DARKNESS, LIGHTED ROAD", 
     "DARKNESS", 
     "DUSK", 
-    "UNKNOWN"
 ]
 
 WEATHER_CONDITIONS = [
@@ -32,7 +44,6 @@ WEATHER_CONDITIONS = [
     "RAIN", 
     "CLOUDY/OVERCAST", 
     "SNOW", 
-    "UNKNOWN"
 ]
 
 def prepare_radar_data(df):
@@ -56,56 +67,116 @@ def prepare_radar_data(df):
     return radar_data
 
 def create_radar_charts(df):
-    radar_data = prepare_radar_data(df)
+    df = df.copy()
+    df['lighting_condition'] = df['lighting_condition'].str.strip().str.upper()
+    df['weather_condition'] = df['weather_condition'].str.strip().str.upper()
+
     charts = []
 
-    for lighting_condition in radar_data.index:
-        values = radar_data.loc[lighting_condition].tolist()
-        values.append(values[0])  # Ferme le cercle
+    # Premier radar : total par type d’éclairage
+    lighting_totals = df.groupby('lighting_condition').sum(numeric_only=True)
+    lighting_totals = lighting_totals.loc[[c for c in LIGHTING_CONDITIONS if c in lighting_totals.index]]
+    total_values = lighting_totals.sum(axis=1).tolist()
+    total_values.append(total_values[0])
+    translated_labels = [LIGHTING_TRANSLATIONS[c] for c in lighting_totals.index]
+    translated_labels.append(translated_labels[0])
 
-        # Traduction des catégories météo
-        categories = radar_data.columns.tolist()
-        translated_categories = [WEATHER_TRANSLATIONS[c] for c in categories]
-        translated_categories.append(translated_categories[0])  # Fermer le cercle aussi ici
+    fig_total = go.Figure()
+    max_val = 0
 
-        fig = go.Figure()
+    for injury_col, injury_label in INJURY_TRANSLATIONS.items():
+        if injury_col not in df.columns:
+            continue
 
-        fig.add_trace(go.Scatterpolar(
+        group = df.groupby('lighting_condition')[injury_col].sum().reindex(LIGHTING_CONDITIONS, fill_value=0)
+        values = group.tolist()
+        values.append(values[0])  # fermer le cercle
+        translated_labels = [LIGHTING_TRANSLATIONS.get(c, c) for c in LIGHTING_CONDITIONS]
+        translated_labels.append(translated_labels[0])
+
+        fig_total.add_trace(go.Scatterpolar(
             r=values,
-            theta=translated_categories,
-            fill='toself',
-            name=LIGHTING_TRANSLATIONS.get(lighting_condition, lighting_condition),
+            theta=translated_labels,
+            name=injury_label,
             hoverinfo='text',
-            text=[
-                f"{cat}: {val}" for cat, val in zip(translated_categories, values)
-            ]
+            text=[f"Condition météo : {label}<br>Blessure : {injury_label}<br>{round(val)} accidents" for label, val in zip(translated_labels, values)],
+            line=dict(color=INJURY_COLORS.get(injury_col))
         ))
 
-        max_value = max(values[:-1])
+        max_val = max(max_val, max(values[:-1]))
+
+    fig_total.update_layout(
+        title="Total d'accidents par type d’éclairage et de blessure",
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, max_val * 1.1])
+        ),
+        showlegend=True,
+        margin=dict(l=50, r=50, t=50, b=30)
+    )
+
+    charts.append(
+        dcc.Graph(
+            figure=fig_total,
+                        config={
+                'displayModeBar': True,
+                'modeBarButtonsToRemove': [
+                    'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
+                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian',
+                    'toggleSpikelines', 'toImage', 'sendDataToCloud'
+                ],
+                'modeBarButtonsToShow': [['zoom2d']],
+                'displaylogo': False
+            },
+            style={'height': '20rem', 'width': '40%'}
+        )
+    )
+
+    # Radars par éclairage avec chaque type de blessure
+    for i, lighting_condition in enumerate(LIGHTING_CONDITIONS):
+        fig = go.Figure()
+        df_light = df[df['lighting_condition'] == lighting_condition]
+
+        max_val = 0
+
+        for injury_col, injury_label in INJURY_TRANSLATIONS.items():
+            if injury_col not in df_light.columns:
+                continue
+            group = df_light.groupby('weather_condition')[injury_col].sum().reindex(WEATHER_CONDITIONS, fill_value=0)
+            values = group.tolist()
+            values.append(values[0])
+            translated_weather = [WEATHER_TRANSLATIONS[c] for c in WEATHER_CONDITIONS]
+            translated_weather.append(translated_weather[0])
+
+            fig.add_trace(go.Scatterpolar(
+                r=values,
+                theta=translated_weather,
+                name=injury_label,
+                hoverinfo='text',
+                text=[f"Condition météo : {w}<br>Blessure : {injury_label}<br>{round(v)} accidents" for w, v in zip(translated_weather, values)],
+                line=dict(color=INJURY_COLORS.get(injury_col))
+            ))
+
+            max_val = max(max_val, max(values[:-1]))
+
         fig.update_layout(
             title=LIGHTING_TRANSLATIONS.get(lighting_condition, lighting_condition),
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, max_value * 1.1]
-                )
-            ),
+            polar=dict(radialaxis=dict(visible=True, range=[0, max_val * 1.1])),
             showlegend=False,
             margin=dict(l=50, r=50, t=50, b=30)
         )
-
-        charts.append(
-            dcc.Graph(
-                figure=fig,
-                config=dict(
-                    scrollZoom=False,
-                    displayModeBar=True,
-                    displaylogo=False
-                ),
-                style={
-                    'height': '20rem',
-                    'width': '30%',
-                })
-        )
+        charts.append(dcc.Graph(
+            figure=fig, 
+            config={
+                'displayModeBar': True,
+                'modeBarButtonsToRemove': [
+                    'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
+                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian',
+                    'toggleSpikelines', 'toImage', 'sendDataToCloud'
+                ],
+                'modeBarButtonsToShow': [['zoom2d']],
+                'displaylogo': False
+            },
+            style={'height': '20rem', 'width': '23%'}
+        ))
 
     return charts
