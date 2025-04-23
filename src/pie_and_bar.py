@@ -100,13 +100,39 @@ def prepare_bar_data(df, category_col):
 def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, bar_title):
     categories = pie_data[category_col].tolist()
     if category_col == "roadway_surface_cond":
-        translated_categories = [ROAD_COND_TRANSLATIONS.get(cat.upper(), cat) for cat in categories]
+        translated_categories = [ROAD_COND_TRANSLATIONS.get(str(cat).strip().upper(), str(cat)) for cat in categories]
     elif category_col == "intersection_related_i":
-        translated_categories = [INTERSECTION_TRANSLATIONS.get(cat.upper(), cat) for cat in categories]
+        translated_categories = [INTERSECTION_TRANSLATIONS.get(str(cat).strip().upper(), str(cat)) for cat in categories]
     else:
-        translated_categories = categories  # fallback pour les autres cas
+        translated_categories = [str(cat) for cat in categories]
 
-    color_map = dict(zip(translated_categories, qualitative.Plotly[:len(translated_categories)]))
+    # Définir les palettes de couleurs spécifiques pour chaque graphique
+    if category_col == "roadway_surface_cond":
+        # Graphique 1: Conditions de la chaussée
+        color_map = {
+            "Sec": "#FF8C00",
+            "Mouillé": "blue",
+            "Autres": "grey"
+        }
+        # Appliquer gris à toutes les autres catégories
+        default_color = "grey"
+    elif category_col == "intersection_related_i":
+        # Graphique 2: Intersection
+        color_map = {
+            "Oui": "blue",
+            "Non": "#FF8C00",  # Vous pouvez changer cette couleur si besoin
+            "Inconnu": "grey"
+        }
+        default_color = "grey"
+    else:
+        # Palette par défaut pour les autres cas
+        color_map = dict(zip(translated_categories, qualitative.Plotly[:len(translated_categories)]))
+        default_color = "#CCCCCC"
+
+    # Remplir les couleurs manquantes avec la couleur par défaut
+    for cat in translated_categories:
+        if cat not in color_map:
+            color_map[cat] = default_color
 
     fig = make_subplots(
         rows=1, cols=2,
@@ -121,11 +147,12 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         translated_labels = [INTERSECTION_TRANSLATIONS.get(val.upper(), val) for val in pie_data[category_col]]
     else:
         translated_labels = pie_data[category_col]
+    
     fig.add_trace(
         go.Pie(
             labels=translated_labels,
             values=pie_data["Count"],
-            marker=dict(colors=[color_map[val] for val in translated_labels]),
+            marker=dict(colors=[color_map.get(val, default_color) for val in translated_labels]),
             showlegend=True,
             hovertemplate=custom_hover_template("pie"),
             name="",
@@ -142,7 +169,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
                 x=[],
                 y=[],
                 name=cat,
-                marker_color=color_map[cat],
+                marker_color=color_map.get(cat, default_color),
                 showlegend=True,
                 visible=True,
                 legendgroup=cat
@@ -158,16 +185,16 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
                                (bar_data["Injury Type"] == injury)]
             fig.add_trace(
                 go.Bar(
-                x=[INJURY_TRANSLATIONS[injury]],  # Nettoyage de x
+                x=[INJURY_TRANSLATIONS[injury]],
                 y=injury_data["Count"],
-                marker_color=color_map[cat],
+                marker_color=color_map.get(cat, default_color),
                 showlegend=False,
                 visible=True,
                 legendgroup=cat,
                 hovertemplate=custom_hover_template(
                     "bar",
                     injury_type=injury,
-                    category_name=translated_categories[i]  # Utilisation directe de la valeur, pas le nom de colonne
+                    category_name=translated_categories[i]
                 ),
                 width=0.1
             ),
@@ -218,12 +245,12 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         legend_title_text="Intersection" if category_col == "intersection_related_i" 
                  else "Condition de la chaussée" if category_col == "roadway_surface_cond" 
                  else category_col.replace("_", " ").title(),
-
         legend=dict(
-        itemclick=False) # Empêche les actions de clic sur les éléments de la légende
+        itemclick=False)
     )
 
     return fig
+
 
 # Fonctions spécifiques
 
