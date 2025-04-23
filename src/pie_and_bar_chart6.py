@@ -89,7 +89,8 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         rows=1, cols=2,
         subplot_titles=(pie_title, bar_title),
         specs=[[{'type': 'domain'}, {'type': 'xy'}]],
-        column_widths=[0.4, 0.6]
+        column_widths=[0.35, 0.65],
+        horizontal_spacing=0.2  # Further increased gap
     )
 
     # Pie chart
@@ -104,7 +105,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
             textinfo='label+percent',
             textposition='inside',
             insidetextorientation='radial',
-            textfont=dict(size=14)  # Increase pie chart label font size
+            textfont=dict(size=14)
         ),
         row=1, col=1
     )
@@ -125,7 +126,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
                     injury_type="%{x}",
                     category_name=cat
                 ),
-                width=0.5  # Increase bar width
+                width=0.5
             ),
             row=1, col=2
         )
@@ -134,37 +135,45 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     fig.update_layout(
         title=dict(
             text=title,
-            font=dict(size=20)  # Increase title font size
+            font=dict(size=20),
+            x=0.5,
+            xanchor='center'
         ),
         barmode="group",
-        height=1000,  
-        width=2200,  
-        margin=dict(l=40, r=40, t=80, b=40),  # Adjust margins for better spacing
+        height=600,
+        width=1200,  # Reduced width to minimize empty space
+        margin=dict(l=60, r=60, t=100, b=200),  # Increased bottom margin for legend and labels
         legend_title_text="Pavement Condition",
         legend=dict(
-            font=dict(size=14)  # Increase legend font size
+            font=dict(size=14),
+            orientation="h",
+            yanchor="bottom",
+            y=-0.5,  # Further adjusted to ensure space
+            xanchor="center",
+            x=0.5
         )
     )
 
     # Update bar chart axes
     fig.update_xaxes(
-        title_text="Type of Injury",
-        title_font=dict(size=16),  # Increase x-axis title font size
+        title_text="Type de blessure",
+        title_font=dict(size=16),
         tickangle=-45,
-        tickfont=dict(size=14),  # Increase tick label font size
+        tickfont=dict(size=12),
+        automargin=True,  # Automatically adjust margins for labels
         row=1, col=2
     )
     fig.update_yaxes(
-        title_text="Number of Accidents",
-        title_font=dict(size=16),  # Increase y-axis title font size
-        tickfont=dict(size=14),  # Increase tick label font size
+        title_text="Nombre d'accidents",
+        title_font=dict(size=16),
+        tickfont=dict(size=14),
         row=1, col=2
     )
 
     # Update subplot titles font size
     fig.update_annotations(
-        font=dict(size=16 
-    ))
+        font=dict(size=16)
+    )
 
     return fig
 
