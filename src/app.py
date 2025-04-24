@@ -215,13 +215,13 @@ app.layout = html.Div(
                             className='text-section',
                             children=[
                                 html.P(
-                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+                                    "Cette visualisation a pour objectif d’analyser la répartition temporelle des accidents de la route selon différents critères : l’heure de la journée, le jour de la semaine, le mois et l’année. En identifiant les périodes les plus à risque, nous visons à sensibiliser les usagers de la route et à orienter les actions de prévention."
                                 ),
                                 html.P(
-                                    'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+                                    "Points saillants : Par heure, les accidents culminent entre 15h et 18h, heures de pointe associées aux retours à la maison. Par jour de semaine, le vendredi enregistre le plus grand nombre d’accidents, tandis que le dimanche est le jour le moins accidentogène. Par mois, le mois d’octobre montre un pic, possiblement lié à la baisse de luminosité et aux conditions météo variables. Par année, une hausse marquée est observée entre 2015 et 2019, suivie d’une relative stabilité."
                                 ),
                                 html.P(
-                                    'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.'
+                                    "Cette analyse met en évidence des moments critiques où la prudence doit être redoublée, notamment en fin d’après-midi et les vendredis. Nous encourageons les conducteurs à adapter leur conduite aux conditions de circulation, à éviter les distractions et à prévoir des marges de sécurité accrues lors des périodes identifiées comme à risque. Une vigilance accrue peut contribuer à sauver des vies."
                                 )
                             ]
                         )
@@ -245,6 +245,20 @@ app.layout = html.Div(
                                 doubleClick=False,
                                 displayModeBar=True
                             )
+                        ),
+                        html.Div(
+                            className='text-section',
+                            children=[
+                                html.P(
+                                    "Cette visualisation présente un histogramme comparant la moyenne quotidienne des accidents de la route selon trois types de jours : les jours ordinaires, les fins de semaine et les jours fériés. L’objectif est de dégager des tendances en fonction du calendrier et de mieux cibler les périodes à risque."
+                                ),
+                                html.P(
+                                    "Points saillants : Les jours ordinaires présentent la moyenne d’accidents la plus élevée, probablement liée aux déplacements domicile-travail et à la densité du trafic. Les fins de semaine affichent une moyenne légèrement inférieure, mais restent élevées, peut-être en raison des déplacements récréatifs ou festifs. Les jours fériés enregistrent la plus faible moyenne, ce qui pourrait s’expliquer par une circulation réduite."
+                                ),
+                                html.P(
+                                    "Bien que les jours fériés soient les moins accidentogènes, les jours ordinaires et les fins de semaine demeurent des périodes critiques nécessitant vigilance et prudence."
+                                )
+                            ]
                         )
                     ],
                     style={'scrollMarginTop': '100px'}
@@ -276,6 +290,20 @@ app.layout = html.Div(
                                 'gap': '20px',
                                 'width': '100%',
                             }
+                        ),
+                        html.Div(
+                            className='text-section',
+                            children=[
+                                html.P(
+                                    "Cette série de visualisations examine comment les conditions d’éclairage (plein jour, crépuscule, nuit éclairée ou sombre) et les conditions météorologiques (dégagé, nuageux, pluie, neige) influencent à la fois le nombre et la gravité des accidents de la route."
+                                ),
+                                html.P(
+                                    "Points saillants : En plein jour, malgré une visibilité optimale, le nombre d’accidents est le plus élevé, possiblement en raison d’un faux sentiment de sécurité, d’une densité de circulation accrue ou d’une vigilance réduite. La majorité des accidents surviennent sous un temps dégagé, indépendamment de l’éclairage. Les conditions extrêmes comme la neige ou la pluie sont associées à moins d’accidents, mais ceux-ci peuvent être plus graves. Peu importe les conditions, les accidents sans blessure dominent, mais des blessures mortelles ou incapacitantes surviennent dans tous les contextes."
+                                ),
+                                html.P(
+                                    "Contrairement à l’intuition, ce ne sont pas les conditions difficiles qui génèrent le plus d’accidents, mais bien les situations perçues comme sécuritaires. Cela montre que la vigilance ne doit jamais être relâchée, même par beau temps ou en plein jour. Une conduite attentive en tout temps est essentielle pour réduire les risques."
+                                )
+                            ]
                         )
                     ],
                     style={'scrollMarginTop': '100px'}
@@ -298,6 +326,20 @@ app.layout = html.Div(
                                 displayModeBar=True
                             )
                         ),
+                        html.Div(
+                            className='text-section',
+                            children=[
+                                html.P(
+                                    "Cette heatmap illustre la relation entre cinq types de collision routière et la gravité des blessures résultantes, révélant clairement que la majorité des accidents n’entraînent pas de blessures visibles, indépendamment du type de collision."
+                                ),
+                                html.P(
+                                    "Les collisions lors de virages (Turning) et à angle produisent le plus grand nombre d’accidents sans blessure apparente, suivies par les collisions par l’arrière, tandis que les accidents impliquant des piétons sont moins fréquents mais présentent une proportion plus élevée de blessures par rapport au nombre total d’incidents de ce type."
+                                ),
+                                html.P(
+                                    "Bien que la plupart des accidents ne causent pas de blessures graves, une attention particulière devrait être portée aux collisions en virage et aux intersections où des mesures d’infrastructure et de signalisation pourraient réduire considérablement le nombre d’accidents."
+                                )
+                            ]
+                        )
                     ],
                     style={'scrollMarginTop': '100px'}
                 ),
