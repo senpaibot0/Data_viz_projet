@@ -29,7 +29,6 @@ temporal_fig = create_temporal_series(dataframe)
 histogram_fig = create_day_type_histogram(dataframe)
 heatmap_fig = get_heatmap_figure(dataframe)
 pie_bar_fig = plot_condition_vs_injury(dataframe)
-pie_bar2_fig = plot_intersection_vs_injury(dataframe)
 
 create_custom_theme()
 set_default_theme()
