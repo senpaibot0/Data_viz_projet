@@ -11,11 +11,11 @@ INJURY_TRANSLATIONS = {
 }
 
 INJURY_COLORS = {
-    "injuries_no_indication": "#1f77b4",        # bleu
-    "injuries_non_incapacitating": "#2ca02c",   # vert
-    "injuries_reported_not_evident": "#ff7f0e", # orange
-    "injuries_incapacitating": "#d62728",       # rouge clair
-    "injuries_fatal": "#8B0000"                 # rouge foncé
+    "injuries_no_indication": "#1f77b4",
+    "injuries_non_incapacitating": "#2ca02c",
+    "injuries_reported_not_evident": "#ff7f0e",
+    "injuries_incapacitating": "#d62728",
+    "injuries_fatal": "#8B0000"
 }
 
 LIGHTING_TRANSLATIONS = {
@@ -73,7 +73,6 @@ def create_radar_charts(df):
 
     charts = []
 
-    # Premier radar : total par type d’éclairage
     lighting_totals = df.groupby('lighting_condition').sum(numeric_only=True)
     lighting_totals = lighting_totals.loc[[c for c in LIGHTING_CONDITIONS if c in lighting_totals.index]]
     total_values = lighting_totals.sum(axis=1).tolist()
@@ -90,7 +89,7 @@ def create_radar_charts(df):
 
         group = df.groupby('lighting_condition')[injury_col].sum().reindex(LIGHTING_CONDITIONS, fill_value=0)
         values = group.tolist()
-        values.append(values[0])  # fermer le cercle
+        values.append(values[0])
         translated_labels = [LIGHTING_TRANSLATIONS.get(c, c) for c in LIGHTING_CONDITIONS]
         translated_labels.append(translated_labels[0])
 
@@ -143,7 +142,6 @@ def create_radar_charts(df):
         )
     )
 
-    # Radars par éclairage avec chaque type de blessure
     for i, lighting_condition in enumerate(LIGHTING_CONDITIONS):
         fig = go.Figure()
         df_light = df[df['lighting_condition'] == lighting_condition]

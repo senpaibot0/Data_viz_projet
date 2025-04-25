@@ -5,7 +5,6 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-# Définition des types de collision et de blessure spécifiés dans le projet
 COLLISION_TYPES = ['Turning', 'Angle', 'Rear end', 'Sideswipe (same direction)', 'Pedestrian']
 INJURY_TYPES = ['No indication of injury', 'Non-incapacitating injury', 'Reported, not evident', 
                 'Incapacitating injury', 'Fatal']
@@ -32,13 +31,9 @@ def prepare_heatmap_data(df):
     Prépare les données pour la heatmap en comptant le nombre d'accidents 
     par type de collision et type de blessure.
     '''
-    # Filtrer les types de collision spécifiés
     df = df.copy()
-    # Convertir en majuscules pour la correspondance
     df['first_crash_type'] = df['first_crash_type'].str.upper()
     
-    # Créer un dictionnaire pour la correspondance entre les valeurs dans le dataset 
-    # et les catégories spécifiées pour l'axe Y
     collision_mapping = {
         'TURNING': 'Turning',
         'ANGLE': 'Angle',
@@ -47,11 +42,9 @@ def prepare_heatmap_data(df):
         'PEDESTRIAN': 'Pedestrian'
     }
     
-    # Appliquer le mapping et filtrer pour ne garder que les types spécifiés
     df['collision_type'] = df['first_crash_type'].map(collision_mapping)
     df = df[df['collision_type'].isin(COLLISION_TYPES)]
     
-    # Déterminer le type de blessure le plus grave pour chaque accident
     def get_injury_type(row):
         if row['injuries_fatal'] > 0:
             return 'Fatal'
@@ -66,29 +59,22 @@ def prepare_heatmap_data(df):
     
     df['injury_type'] = df.apply(get_injury_type, axis=1)
     
-    # Comptez le nombre d'accidents pour chaque combinaison
     heatmap_data = df.groupby(['collision_type', 'injury_type']).size().reset_index(name='count')
     
-    # Créer un DataFrame pivot pour la heatmap
     pivot_data = heatmap_data.pivot(index='collision_type', columns='injury_type', values='count')
     
-    # S'assurer que toutes les colonnes spécifiées sont présentes
     for injury in INJURY_TYPES:
         if injury not in pivot_data.columns:
             pivot_data[injury] = 0
     
-    # Réordonner les colonnes selon l'ordre spécifié
     pivot_data = pivot_data[INJURY_TYPES]
     
-    # S'assurer que toutes les lignes spécifiées sont présentes
     for collision in COLLISION_TYPES:
         if collision not in pivot_data.index:
             pivot_data.loc[collision] = [0] * len(INJURY_TYPES)
     
-    # Réordonner les lignes selon l'ordre spécifié
     pivot_data = pivot_data.reindex(COLLISION_TYPES)
     
-    # Remplir les valeurs NaN par 0
     pivot_data = pivot_data.fillna(0)
     
     return pivot_data
@@ -100,7 +86,6 @@ def create_heatmap(df):
     '''
     heatmap_data = prepare_heatmap_data(df)
 
-    # Traduction des étiquettes
     translated_x = [INJURY_TRANSLATIONS[x] for x in heatmap_data.columns]
     translated_y = [COLLISION_TRANSLATIONS[y] for y in heatmap_data.index]
 
@@ -123,11 +108,11 @@ def create_heatmap(df):
         for j, x in enumerate(heatmap_data.columns):
             fig.add_shape(
                 type="rect",
-                x0=j - 0.5,  # Positionnement des bords de la case (ajuster la taille si nécessaire)
+                x0=j - 0.5,
                 y0=i - 0.5,
                 x1=j + 0.5,
                 y1=i + 0.5,
-                line=dict(color="white", width=1),  # Bordure blanche
+                line=dict(color="white", width=1),
             )
             
     fig.update_layout(
@@ -148,7 +133,6 @@ def create_heatmap(df):
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(
             family="Lato, sans-serif", 
-            # size=12, 
             color="#031732",
         )
     )

@@ -18,31 +18,25 @@ from histogramme_type_jour import create_day_type_histogram
 from template import create_custom_theme, set_default_theme
 from heatmap import get_figure as get_heatmap_figure
 
-# Initialize the Dash app
 app = dash.Dash(__name__)
 app.title = 'Traffic Accidents Dashboard | INF8808'
 
-# Load data
 import os
 csv_path = os.path.join(os.path.dirname(__file__), 'assets/data/traffic_accidents.csv')
 dataframe = pd.read_csv(csv_path)
 
-# Generate figures
 temporal_fig = create_temporal_series(dataframe)
 histogram_fig = create_day_type_histogram(dataframe)
 heatmap_fig = get_heatmap_figure(dataframe)
 pie_bar_fig = plot_condition_vs_injury(dataframe)
 pie_bar2_fig = plot_intersection_vs_injury(dataframe)
 
-# Apply custom theme
 create_custom_theme()
 set_default_theme()
 
-# Define the layout
 app.layout = html.Div(
     className='content',
     children=[
-        # Header with logo and navigation
         html.Header(
             children=[
                 html.Div(
@@ -70,13 +64,11 @@ app.layout = html.Div(
                 )
             ]
         ),
-        # Main content
         html.Div(
             className='viz-container',
             children=[
                 html.Div(
                     className='nav-bar',
-                    # style={'marginBottom': '20px'},
                     children=[
                         html.A(
                             'Série temporelle',
@@ -108,11 +100,6 @@ app.layout = html.Div(
                             href='#pie-bar2-section',
                             className='nav-button',
                         ),
-                        # html.A(
-                        #     'PDF',
-                        #     href='#',
-                        #     className='nav-button',
-                        # )
                     ]
                 ),
                 # html.H2('Statistique Canada | Statistic Canada',),
@@ -456,7 +443,6 @@ app.layout = html.Div(
                     ],
                     style={'scrollMarginTop': '100px',}
                 ),
-                # Footer
                 html.Div(
                     className="footer",
                     children=[

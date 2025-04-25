@@ -93,7 +93,6 @@ def create_day_type_histogram(df):
             visible=visible
         )
 
-    # Sélecteur d'année
     buttons = []
     for i, year in enumerate(['Toutes les années'] + available_years):
         vis = [False] * len(fig.data)
@@ -119,7 +118,6 @@ def create_day_type_histogram(df):
         )],
         title_text="",
         height=350,
-        # width=400,
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',

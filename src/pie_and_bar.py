@@ -212,7 +212,6 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         )
             traces.append((cat, injury))
 
-    # Menu déroulant
     buttons = []
 
     visible_all = [True] + [True] * len(translated_categories) + [True] * len(traces)
@@ -235,7 +234,6 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
                   {"showlegend": True}]
         ))
 
-    # Configuration des axes
     fig.update_xaxes(title_text="Type de blessure", row=1, col=2, title_font=dict(family="Lato, sans-serif"))
     fig.update_yaxes(title_text="Nombre d'accidents (logarithmique)", type="log", row=1, col=2, title_font=dict(family="Lato, sans-serif"))
 
@@ -273,8 +271,6 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
 
     return fig
 
-
-# Fonctions spécifiques
 
 def plot_intersection_vs_injury(df):
     category = "intersection_related_i"
