@@ -120,7 +120,7 @@ def create_heatmap(df):
         xaxis_title="Type de blessure",
         yaxis_title="Type de collision",
         xaxis_tickangle=-45,
-        margin=dict(l=100, r=20, t=20, b=50), 
+        margin=dict(l=0, r=20, t=20, b=50), 
         yaxis=dict(
             automargin=True, 
             tickfont=dict(size=10),
@@ -129,7 +129,7 @@ def create_heatmap(df):
             tickfont=dict(size=9),
         ),
         height=400,
-        width=850,
+        width=750,
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(
             family="Lato, sans-serif", 
