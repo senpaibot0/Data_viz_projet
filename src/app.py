@@ -379,9 +379,9 @@ app.layout = html.Div(
                 ),
                 html.Hr(className='divider'),
                 # Pie/Bar Chart (Road Condition)
-                html.H3("Selon la condition de la chaussée et la gravité des blessures"),
+                html.H3("Nombre de blessures selon la condition de la chaussée et la gravité des blessures"),
                 html.P(
-                    'Cette visualisation établit le nombre de blessures en fonction de la condition de la chaussée.',
+                    'Pour étudier le risque potentiel de blessure et sa gravité selon l'état de la chaussée, cette visualisation établit le nombre de blessures associé à ces deux éléments.',
                     className='general-text',
                     style={
                         'marginTop': '1rem',
@@ -416,7 +416,7 @@ app.layout = html.Div(
                             ]
                         ),
                         html.P(
-                            "Elle montre que la majorité des accidents se produit à l'approche d'une intersection, mais que ces accidents sont majoritairement sans blessure. Il en est de même en ce qui concerne la condition de la chaussée.",
+                            "Elle montre que la majorité des accidents se produit lorsque la chaussée est sèche, donc à bonne condition météorologique que ces accidents sont majoritairement sans blessure. Ce grand nombre laisse à penser que c'est la vigilance des conducteurs qui fait défaut. Les blessures mortelles se produisent le plus souvent en état de chaussée sèche et rarement lorsqu'elle est mouillée. Une recommandation exhaustive se porte alors à l'attention des automobilistes avant de d'observer d'autres facteurs non ènumérés comme la présence d'animaux.",
                             className='under-chart-text',
                             style={
                                 'marginTop': '1rem',
@@ -429,7 +429,7 @@ app.layout = html.Div(
                 # Pie/Bar Chart (Intersection)
                 html.H3("Selon la présence/absence d'intersection et la gravité des blessures"),
                 html.P(
-                    "Cette visualisation établit le nombre de blessures en fonction de leur gravité selon s'il y a présence ou absence d'une intersection.",
+                    "Cette visualisation établit le nombre de blessures en fonction de leur gravité selon s'il y a présence ou absence d'une intersection. Elle vise à dégager comme le montre les graphiques le danger que court les automobilistes à l'approche d'une intersection.",
                     className='general-text',
                     style={
                         'marginTop': '1rem',
@@ -464,7 +464,7 @@ app.layout = html.Div(
                             ]
                         ),
                         html.P(
-                            "Une attention particulière devrait être portée sur les blessures mortelles et incapacitantes en cas d'intersection et de chaussée sèche.",
+                            "Comme la précédente, elle montre que la majorité des accidents se produit quand il y a une intersection, encore avec aucune blessure et un nombre de décès peu élevés. Cependant pour ces deux visualisations, l'attention devrait être portée sur les blesssures incapacitantes qui présentent un grand risque à la mobilité de la personne. Il serait encouragé de  mettre plus de panneaux de signalisation aux intersections et à toujours appeler à la vigilance. ",
                             className='under-chart-text',
                             style={
                                 'marginTop': '1rem',
