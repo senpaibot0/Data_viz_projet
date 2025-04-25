@@ -44,7 +44,18 @@ app.layout = html.Div(
                             src='/assets/canada-logo.jpg',
                             style={'height': '40px', 'marginRight': '20px'}
                         ),
-                        html.H1('TABLEAU DE BORD DES ACCIDENTS DE LA ROUTE', style={'fontSize': '33.5px'}),
+                        html.H1(
+                            'TABLEAU DE BORD DES ACCIDENTS DE LA ROUTE', 
+                            style={
+                                'fontFamily': 'Lato, sans-serif',
+                                'flex': 1,
+                                'fontSize': 'clamp(16px, 3vw, 32px)',
+                                'margin': 0,
+                                'whiteSpace': 'nowrap',
+                                'overflow': 'hidden',
+                                'textOverflow': 'ellipsis'
+                            },
+                        ),
                     ],
                     style={'display': 'flex', 'alignItems': 'center'},
                 ),
@@ -145,11 +156,11 @@ app.layout = html.Div(
                     className='chart-container',
                     children=[
                         html.Div(
-                            className='chart-section',
+                            style={'display': 'flex', 'flexDirection': 'column', 'justifyContent': 'center', 'width': '100%'},
+                            className='graph',
                             children=[
                                 dcc.Graph(
                                     id='temporal-series',
-                                    className='graph',
                                     figure=create_temporal_series(dataframe),
                                     config=dict(
                                         displayModeBar=True,
@@ -199,24 +210,29 @@ app.layout = html.Div(
                     id='histogram-section',
                     className='chart-container',
                     children=[
-                        dcc.Graph(
-                            id='day-type-histogram',
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'center', 'width': '100%'},
                             className='graph',
-                            figure=create_day_type_histogram(dataframe),
-                            config=dict(
-                                displayModeBar=True,
-                                displaylogo=False,
-                                scrollZoom=False,
-                                showTips=False,
-                                showAxisDragHandles=False,
-                                doubleClick='reset',
-                                modeBarButtonsToRemove=[
-                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
-                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
-                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
-                                ],
-                                modeBarButtonsToKeep=['zoom2d']
-                            )
+                            children=[
+                                dcc.Graph(
+                                    id='day-type-histogram',
+                                    figure=create_day_type_histogram(dataframe),
+                                    config=dict(
+                                        displayModeBar=True,
+                                        displaylogo=False,
+                                        scrollZoom=False,
+                                        showTips=False,
+                                        showAxisDragHandles=False,
+                                        doubleClick='reset',
+                                        modeBarButtonsToRemove=[
+                                            'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                            'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                            'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                        ],
+                                        modeBarButtonsToKeep=['zoom2d']
+                                    )
+                                ),
+                            ]
                         ),
                         html.P(
                             "Les jours ordinaires présentent la moyenne d’accidents la plus élevée, probablement liée aux déplacements domicile-travail et à la densité du trafic. Les fins de semaine affichent une moyenne légèrement inférieure, mais restent élevées, peut-être en raison des déplacements récréatifs ou festifs. Les jours fériés enregistrent la plus faible moyenne, ce qui pourrait s’expliquer par une circulation réduite.",
@@ -320,24 +336,29 @@ app.layout = html.Div(
                     id='heatmap-section',
                     className='chart-container',
                     children=[
-                        dcc.Graph(
-                            id='heatmap-chart',
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'center', 'width': '100%'},
                             className='graph',
-                            figure=heatmap_fig,
-                            config=dict(
-                                displayModeBar=True,
-                                displaylogo=False,
-                                scrollZoom=False,
-                                showTips=False,
-                                showAxisDragHandles=False,
-                                doubleClick='reset',
-                                modeBarButtonsToRemove=[
-                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
-                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
-                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
-                                ],
-                                modeBarButtonsToKeep=['zoom2d']
-                            )
+                            children=[
+                                dcc.Graph(
+                                    id='heatmap-chart',
+                                    figure=heatmap_fig,
+                                    config=dict(
+                                        displayModeBar=True,
+                                        displaylogo=False,
+                                        scrollZoom=False,
+                                        showTips=False,
+                                        showAxisDragHandles=False,
+                                        doubleClick='reset',
+                                        modeBarButtonsToRemove=[
+                                            'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                            'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                            'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                        ],
+                                        modeBarButtonsToKeep=['zoom2d']
+                                    ),
+                                ),
+                            ]
                         ),
                         html.P(
                             'Les collisions lors de virages (Turning) et à angle produisent le plus grand nombre d’accidents sans blessure apparente, suivies par les collisions par l’arrière, tandis que les accidents impliquant des piétons sont moins fréquents mais présentent une proportion plus élevée de blessures par rapport au nombre total d’incidents de ce type.',
@@ -370,24 +391,29 @@ app.layout = html.Div(
                     id='pie-bar1-section',
                     className='chart-container',
                     children=[
-                        dcc.Graph(
-                            id='pie-bar1-chart',
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'center', 'width': '100%'},
                             className='graph',
-                            figure=plot_condition_vs_injury(dataframe),
-                            config=dict(
-                                displayModeBar=True,
-                                displaylogo=False,
-                                scrollZoom=False,
-                                showTips=False,
-                                showAxisDragHandles=False,
-                                doubleClick='reset',
-                                modeBarButtonsToRemove=[
-                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
-                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
-                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
-                                ],
-                                modeBarButtonsToKeep=['zoom2d']
-                            )
+                            children=[
+                                dcc.Graph(
+                                    id='pie-bar1-chart',
+                                    figure=plot_condition_vs_injury(dataframe),
+                                    config=dict(
+                                        displayModeBar=True,
+                                        displaylogo=False,
+                                        scrollZoom=False,
+                                        showTips=False,
+                                        showAxisDragHandles=False,
+                                        doubleClick='reset',
+                                        modeBarButtonsToRemove=[
+                                            'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                            'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                            'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                        ],
+                                        modeBarButtonsToKeep=['zoom2d']
+                                    )
+                                ),
+                            ]
                         ),
                         html.P(
                             "Elle montre que la majorité des accidents se produit à l'approche d'une intersection, mais que ces accidents sont majoritairement sans blessure. Il en est de même en ce qui concerne la condition de la chaussée.",
@@ -413,24 +439,29 @@ app.layout = html.Div(
                     id='pie-bar2-section',
                     className='chart-container',
                     children=[
-                        dcc.Graph(
-                            id='pie-bar2-chart',
+                        html.Div(
+                            style={'display': 'flex', 'justifyContent': 'center', 'width': '100%'},
                             className='graph',
-                            figure=plot_intersection_vs_injury(dataframe),
-                            config=dict(
-                                displayModeBar=True,
-                                displaylogo=False,
-                                scrollZoom=False,
-                                showTips=False,
-                                showAxisDragHandles=False,
-                                doubleClick='reset',
-                                modeBarButtonsToRemove=[
-                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
-                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
-                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
-                                ],
-                                modeBarButtonsToKeep=['zoom2d']
-                            )
+                            children=[
+                                dcc.Graph(
+                                    id='pie-bar2-chart',
+                                    figure=plot_intersection_vs_injury(dataframe),
+                                    config=dict(
+                                        displayModeBar=True,
+                                        displaylogo=False,
+                                        scrollZoom=False,
+                                        showTips=False,
+                                        showAxisDragHandles=False,
+                                        doubleClick='reset',
+                                        modeBarButtonsToRemove=[
+                                            'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                            'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                            'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                        ],
+                                        modeBarButtonsToKeep=['zoom2d']
+                                    )
+                                ),
+                            ]
                         ),
                         html.P(
                             "Une attention particulière devrait être portée sur les blessures mortelles et incapacitantes en cas d'intersection et de chaussée sèche.",
