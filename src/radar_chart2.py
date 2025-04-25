@@ -94,30 +94,42 @@ def create_radar_charts(df):
         translated_labels = [LIGHTING_TRANSLATIONS.get(c, c) for c in LIGHTING_CONDITIONS]
         translated_labels.append(translated_labels[0])
 
-        fig_total.add_trace(go.Scatterpolar(
-            r=values,
-            theta=translated_labels,
-            name=injury_label,
-            hoverinfo='text',
-            text=[f"Condition météo : {label}<br>Blessure : {injury_label}<br>{round(val)} accidents" for label, val in zip(translated_labels, values)],
-            line=dict(color=INJURY_COLORS.get(injury_col))
-        ))
+        fig_total.add_trace(
+            go.Scatterpolar(
+                r=values,
+                theta=translated_labels,
+                name=injury_label,
+                hovertemplate="<b>%{theta}</b><br>Blessure : " + injury_label + "<br>%{r} accidents<extra></extra>",
+                hoverlabel=dict(
+                    font=dict(color='white', family="Lato, sans-serif"),
+                    bgcolor=INJURY_COLORS[injury_col],
+                    bordercolor='white'
+                ),
+                line=dict(color=INJURY_COLORS.get(injury_col)),
+            ),
+        )
 
         max_val = max(max_val, max(values[:-1]))
 
     fig_total.update_layout(
-        title="Total d'accidents par type d’éclairage et de blessure",
+        title="Total des accidents par type d’éclairage et de blessure",
         polar=dict(
             radialaxis=dict(visible=True, range=[0, max_val * 1.1])
         ),
         showlegend=True,
-        margin=dict(l=50, r=50, t=50, b=30)
+        margin=dict(l=50, r=50, t=70, b=50),
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(
+            family="Lato, sans-serif", 
+            size=12, 
+            color="#031732",
+        ),
     )
 
     charts.append(
         dcc.Graph(
             figure=fig_total,
-                        config={
+            config={
                 'displayModeBar': True,
                 'modeBarButtonsToRemove': [
                     'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
@@ -127,7 +139,7 @@ def create_radar_charts(df):
                 'modeBarButtonsToShow': [['zoom2d']],
                 'displaylogo': False
             },
-            style={'height': '20rem', 'width': '40%'}
+            style={'height': '20rem', 'width': '65%'}
         )
     )
 
@@ -147,14 +159,20 @@ def create_radar_charts(df):
             translated_weather = [WEATHER_TRANSLATIONS[c] for c in WEATHER_CONDITIONS]
             translated_weather.append(translated_weather[0])
 
-            fig.add_trace(go.Scatterpolar(
-                r=values,
-                theta=translated_weather,
-                name=injury_label,
-                hoverinfo='text',
-                text=[f"Condition météo : {w}<br>Blessure : {injury_label}<br>{round(v)} accidents" for w, v in zip(translated_weather, values)],
-                line=dict(color=INJURY_COLORS.get(injury_col))
-            ))
+            fig.add_trace(
+                go.Scatterpolar(
+                    r=values,
+                    theta=translated_weather,
+                    name=injury_label,
+                    hovertemplate="<b>%{theta}</b><br>Blessure : " + injury_label + "<br>%{r} accidents<extra></extra>",
+                    hoverlabel=dict(
+                        font=dict(color='white', family="Lato, sans-serif"),
+                        bgcolor=INJURY_COLORS[injury_col],
+                        bordercolor='white'
+                    ),
+                    line=dict(color=INJURY_COLORS.get(injury_col))
+                ),
+            ),
 
             max_val = max(max_val, max(values[:-1]))
 
@@ -162,7 +180,13 @@ def create_radar_charts(df):
             title=LIGHTING_TRANSLATIONS.get(lighting_condition, lighting_condition),
             polar=dict(radialaxis=dict(visible=True, range=[0, max_val * 1.1])),
             showlegend=False,
-            margin=dict(l=50, r=50, t=50, b=30)
+            margin=dict(l=50, r=50, t=70, b=30),
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(
+                family="Lato, sans-serif", 
+                size=12, 
+                color="#031732",
+            ),
         )
         charts.append(dcc.Graph(
             figure=fig, 
@@ -176,7 +200,7 @@ def create_radar_charts(df):
                 'modeBarButtonsToShow': [['zoom2d']],
                 'displaylogo': False
             },
-            style={'height': '20rem', 'width': '23%'}
+            style={'height': '20rem', 'width': '40%'}
         ))
 
     return charts

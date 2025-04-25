@@ -4,7 +4,6 @@ from plotly.subplots import make_subplots
 from plotly.colors import qualitative
 import numpy as np
 
-# Colonnes de blessures
 INJURY_COLS = [
     "injuries_no_indication",
     "injuries_non_incapacitating",
@@ -65,15 +64,14 @@ def custom_hover_template(chart_type, **kwargs):
     if chart_type == "pie":
         return (
             "<b>%{label}</b><br>"
-            "Nombre : %{value:,}<br>"
-            "Pourcentage : %{percent:.1%}"
+            "%{value:,} accidents<br>"
             "<extra></extra>"
         )
     elif chart_type == "bar":
         return (
-        f"<b>{INJURY_TRANSLATIONS.get(kwargs.get('injury_type', ''), '').title()}</b><br>"
-        "Nombre : %{y:,}<br>"
-        f"Catégorie : {kwargs.get('category_name', '')}"
+        f"<b>{kwargs.get('category_name', '')}</b><br>"
+        f"Blessure : {INJURY_TRANSLATIONS.get(kwargs.get('injury_type', ''), '').title()}<br>"
+        "%{y} accidents<br>"
         "<extra></extra>"
     )
     return ""
@@ -106,30 +104,24 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     else:
         translated_categories = [str(cat) for cat in categories]
 
-    # Définir les palettes de couleurs spécifiques pour chaque graphique
     if category_col == "roadway_surface_cond":
-        # Graphique 1: Conditions de la chaussée
         color_map = {
-            "Sec": "#FF8C00",
-            "Mouillé": "blue",
-            "Autres": "grey"
+            "Sec": "#dd6700",
+            "Mouillé": "#1f77b4",
+            "Autres": "grey",
         }
-        # Appliquer gris à toutes les autres catégories
         default_color = "grey"
     elif category_col == "intersection_related_i":
-        # Graphique 2: Intersection
         color_map = {
-            "Oui": "blue",
-            "Non": "#FF8C00",  # Vous pouvez changer cette couleur si besoin
-            "Inconnu": "grey"
+            "Oui": "#d62728",
+            "Non": "#2ca02c",
+            "Inconnu": "#D3D3D3"
         }
         default_color = "grey"
     else:
-        # Palette par défaut pour les autres cas
         color_map = dict(zip(translated_categories, qualitative.Plotly[:len(translated_categories)]))
         default_color = "#CCCCCC"
 
-    # Remplir les couleurs manquantes avec la couleur par défaut
     for cat in translated_categories:
         if cat not in color_map:
             color_map[cat] = default_color
@@ -137,10 +129,11 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
     fig = make_subplots(
         rows=1, cols=2,
         subplot_titles=(pie_title, bar_title),
-        specs=[[{'type': 'domain'}, {'type': 'xy'}]]
+        specs=[[{'type': 'domain'}, {'type': 'xy'}]],
+        column_widths=[0.35, 0.65],
+        horizontal_spacing=0.13,
     )
 
-    # PIE chart
     if category_col == "roadway_surface_cond":
         translated_labels = [ROAD_COND_TRANSLATIONS.get(val.upper(), val) for val in pie_data[category_col]]
     elif category_col == "intersection_related_i":
@@ -152,17 +145,25 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         go.Pie(
             labels=translated_labels,
             values=pie_data["Count"],
-            marker=dict(colors=[color_map.get(val, default_color) for val in translated_labels]),
+            marker=dict(
+                colors=[color_map.get(val, default_color) for val in translated_labels],
+                line=dict(color="white", width=1),
+            ),
             showlegend=True,
             hovertemplate=custom_hover_template("pie"),
             name="",
             textinfo='percent',
-            textposition='inside'
+            textposition='inside',
+            textfont=dict(color="white", family="Lato, sans-serif"),
+            hoverlabel=dict(
+                bgcolor=[color_map.get(val, default_color) for val in translated_labels],
+                font=dict(color="white", family="Lato, sans-serif"),
+                bordercolor="white",
+            ),
         ),
         row=1, col=1
     )
 
-    # BAR chart - légendes
     for i, cat in enumerate(translated_categories):
         fig.add_trace(
             go.Bar(
@@ -177,17 +178,21 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
             row=1, col=2
         )
     
-    # BAR chart - données
     traces = []
     for j, injury in enumerate(INJURY_COLS):
         for i, cat in enumerate(translated_categories):
-            injury_data = bar_data[(bar_data[category_col] == cat) &
-                               (bar_data["Injury Type"] == injury)]
+            injury_data = bar_data[(bar_data[category_col] == cat) & (bar_data["Injury Type"] == injury)]
             fig.add_trace(
                 go.Bar(
                 x=[INJURY_TRANSLATIONS[injury]],
                 y=injury_data["Count"],
                 marker_color=color_map.get(cat, default_color),
+                marker=dict(
+                    line=dict(
+                        color='white',
+                        width=0.5
+                    )
+                ),
                 showlegend=False,
                 visible=True,
                 legendgroup=cat,
@@ -196,7 +201,12 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
                     injury_type=injury,
                     category_name=translated_categories[i]
                 ),
-                width=0.1
+                hoverlabel=dict(
+                    bgcolor=color_map.get(cat, default_color),
+                    font=dict(color="white", family="Lato, sans-serif"),
+                    bordercolor="white",
+                ),
+                width=0.1,
             ),
             row=1, col=2
         )
@@ -207,7 +217,7 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
 
     visible_all = [True] + [True] * len(translated_categories) + [True] * len(traces)
     buttons.append(dict(
-        label="See All",
+        label="Tous les types de blessures",
         method="update",
         args=[{"visible": visible_all},
               {"showlegend": True}]
@@ -226,27 +236,39 @@ def create_combined_figure(pie_data, bar_data, category_col, title, pie_title, b
         ))
 
     # Configuration des axes
-    fig.update_xaxes(title_text="Type de blessure", row=1, col=2)
-    fig.update_yaxes(title_text="Nombre d'accidents (logarithmique)", type="log", row=1, col=2)
+    fig.update_xaxes(title_text="Type de blessure", row=1, col=2, title_font=dict(family="Lato, sans-serif"))
+    fig.update_yaxes(title_text="Nombre d'accidents (logarithmique)", type="log", row=1, col=2, title_font=dict(family="Lato, sans-serif"))
 
     fig.update_layout(
         title_text=title,
+        title_font=dict(family="Lato, sans-serif"),
         barmode="group",
         updatemenus=[dict(
             buttons=buttons,
             direction="down",
             showactive=True,
             active=0,
-            x=0.5,
+            x=0.145,
             xanchor="center",
-            y=1.15,
-            yanchor="top"
+            y=1.1,
+            yanchor="top",
+            bgcolor="white",
+            bordercolor="lightgrey",
+            borderwidth=1,
+            font=dict(
+                family="Lato, sans-serif", 
+                color="#031732",
+            ),
         )],
         legend_title_text="Intersection" if category_col == "intersection_related_i" 
-                 else "Condition de la chaussée" if category_col == "roadway_surface_cond" 
+                 else "Condition de<br>la chaussée" if category_col == "roadway_surface_cond" 
                  else category_col.replace("_", " ").title(),
-        legend=dict(
-        itemclick=False)
+        legend=dict(itemclick=False, y=0.8, itemwidth=40, font=dict(family="Lato, sans-serif"),),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        margin=dict(t=0, b=100, l=10, r=0),
+        height=400,
+        width=900,
     )
 
     return fig
@@ -263,8 +285,8 @@ def plot_intersection_vs_injury(df):
     return create_combined_figure(
         pie_data, bar_data, category,
         title="",
-        pie_title="", #Répartition des accidents Ajouté le titre si besoin
-        bar_title="" # Types de blessures (échelle log)
+        pie_title="",
+        bar_title=""
     )
 
 def plot_condition_vs_injury(df):
@@ -276,7 +298,6 @@ def plot_condition_vs_injury(df):
     return create_combined_figure(
         pie_data, bar_data, category,
         title="",
-        pie_title="", #Répartition des accidents Ajouté le titre si besoin
-        bar_title="" #Types de blessures (échelle log)
+        pie_title="",
+        bar_title="",
     )
-

@@ -104,21 +104,53 @@ def create_heatmap(df):
     translated_x = [INJURY_TRANSLATIONS[x] for x in heatmap_data.columns]
     translated_y = [COLLISION_TRANSLATIONS[y] for y in heatmap_data.index]
 
-    fig = go.Figure(data=go.Heatmap(
-        z=heatmap_data.values,
-        x=translated_x,
-        y=translated_y,
-        colorscale='Blues',
-        hovertemplate='Type de collision: %{y}<br>Type de blessure: %{x}<br>Nombre d\'accidents: %{z}<extra></extra>'
-    ))
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=heatmap_data.values,
+            x=translated_x,
+            y=translated_y,
+            colorscale='Blues',
+            hovertemplate='Collision : <b>%{y}</b><br>Blessure : %{x}<br>%{z} accidents<extra></extra>',
+            hoverlabel=dict(
+                bgcolor="#E6F0FF",
+                font=dict(color="#031732", family="Lato, sans-serif"),
+                bordercolor="black"
+            ),
+        ),
+    )
 
+    for i, y in enumerate(heatmap_data.index):
+        for j, x in enumerate(heatmap_data.columns):
+            fig.add_shape(
+                type="rect",
+                x0=j - 0.5,  # Positionnement des bords de la case (ajuster la taille si nécessaire)
+                y0=i - 0.5,
+                x1=j + 0.5,
+                y1=i + 0.5,
+                line=dict(color="white", width=1),  # Bordure blanche
+            )
+            
     fig.update_layout(
         title="",
         xaxis_title="Type de blessure",
         yaxis_title="Type de collision",
         xaxis_tickangle=-45,
-        height=600,
-        width=1000
+        margin=dict(l=100, r=20, t=20, b=50), 
+        yaxis=dict(
+            automargin=True, 
+            tickfont=dict(size=10),
+        ),
+        xaxis=dict(
+            tickfont=dict(size=9),
+        ),
+        height=400,
+        width=850,
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(
+            family="Lato, sans-serif", 
+            # size=12, 
+            color="#031732",
+        )
     )
 
     return fig

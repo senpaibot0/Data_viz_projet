@@ -28,12 +28,11 @@ csv_path = os.path.join(os.path.dirname(__file__), 'assets/data/traffic_accident
 dataframe = pd.read_csv(csv_path)
 
 # Generate figures
-pie_bar_fig = plot_condition_vs_injury(dataframe)
-pie_bar2_fig = plot_intersection_vs_injury(dataframe)
 temporal_fig = create_temporal_series(dataframe)
 histogram_fig = create_day_type_histogram(dataframe)
-radar_fig = create_radar_charts(dataframe)
 heatmap_fig = get_heatmap_figure(dataframe)
+pie_bar_fig = plot_condition_vs_injury(dataframe)
+pie_bar2_fig = plot_intersection_vs_injury(dataframe)
 
 # Apply custom theme
 create_custom_theme()
@@ -47,22 +46,27 @@ app.layout = html.Div(
         html.Header(
             children=[
                 html.Div(
-                    style={'display': 'flex', 'alignItems': 'center'},
                     children=[
                         html.Img(
                             src='/assets/canada-logo.jpg',
                             style={'height': '40px', 'marginRight': '20px'}
                         ),
-                        html.H1('DASHBOARD DES ACCIDENTS DE LA ROUTE')
-                    ]
+                        html.H1('TABLEAU DE BORD DES ACCIDENTS DE LA ROUTE', style={'fontSize': '33.5px'}),
+                    ],
+                    style={'display': 'flex', 'alignItems': 'center'},
                 ),
                 html.Nav(
-                    style={'backgroundColor': '#E5E5E5', 'padding': '10px 0', 'marginTop': '10px', 'width': '100%', 'justifyContent': 'center'},
                     children=[
-                        html.A('Home', href='#', style={'margin': '0 15px', 'color': '#333', 'textDecoration': 'none'}),
-                        html.A('Data', href='#', style={'margin': '0 15px', 'color': '#333', 'textDecoration': 'none'}),
-                        html.A('Analysis', href='#', style={'margin': '0 15px', 'color': '#333', 'textDecoration': 'none'}),
-                    ]
+                        html.A('Accueil', href='#', className='header-nav-button'),
+                        html.A('Données', href='#', className='header-nav-button'),
+                        html.A('Analyses', href='#', className='header-nav-button'),
+                    ],
+                    style={
+                        'backgroundColor': '#336b95', 
+                        'padding': '10px 0px', 
+                        'marginTop': '10px', 
+                        'width': '100%'
+                    },
                 )
             ]
         ),
@@ -70,125 +74,86 @@ app.layout = html.Div(
         html.Div(
             className='viz-container',
             children=[
-                # Buttons for Visualizations (using anchor tags)
                 html.Div(
-                    style={'marginBottom': '20px'},
+                    className='nav-bar',
+                    # style={'marginBottom': '20px'},
                     children=[
                         html.A(
                             'Série temporelle',
                             href='#temporal-section',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginRight': '5px',
-                                'cursor': 'pointer'
-                            }
+                            className='nav-button',
                         ),
                         html.A(
                             'Type de jour',
                             href='#histogram-section',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginRight': '5px',
-                                'cursor': 'pointer'
-                            }
+                            className='nav-button',
                         ),
                         html.A(
-                            'Conditions éclairage/météo',
+                            "Conditions d'éclairage/météo",
                             href='#radar-section',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginRight': '5px',
-                                'cursor': 'pointer'
-                            }
+                            className='nav-button',
                         ),
                         html.A(
-                            'Matrice de chaleur',
+                            'Type de collision',
                             href='#heatmap-section',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginRight': '5px',
-                                'cursor': 'pointer'
-                            }
+                            className='nav-button',
                         ),
                         html.A(
-                            'Condition chaussée',
+                            'Condition de chaussée',
                             href='#pie-bar1-section',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginRight': '5px',
-                                'cursor': 'pointer'
-                            }
+                            className='nav-button',
                         ),
                         html.A(
-                            'Présence intersection',
+                            "Présence d'intersection",
                             href='#pie-bar2-section',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginRight': '5px',
-                                'cursor': 'pointer'
-                            }
+                            className='nav-button',
                         ),
-                        html.A(
-                            'PDF',
-                            href='#',
-                            style={
-                                'padding': '8px 20px',
-                                'color': '#333',
-                                'textDecoration': 'none',
-                                'border': '1px solid #999',
-                                'backgroundColor': '#F5F5F5',
-                                'fontSize': '14px',
-                                'marginLeft': '5px'
-                            }
-                        )
+                        # html.A(
+                        #     'PDF',
+                        #     href='#',
+                        #     className='nav-button',
+                        # )
                     ]
                 ),
-
-                html.H2('Statistiques Canada'),
-                html.H2(
-                    children=[
-                        html.Em("Visualiser les tendances des accidents de la route")
-                    ],
+                # html.H2('Statistique Canada | Statistic Canada',),
+                html.P(
+                    'Released: 2025-04-25',
+                    className='general-text', 
                     style={
-                        'fontFamily': 'Arial, Helvetica, sans-serif',
-                        'fontWeight': 'bold'
+                        'fontSize': '10px', 
+                        'textAlign': 'right',
+                        'marginTop': '2rem',
                     }
                 ),
-                html.P('Released: 2025-04-23'),
+                html.H2(
+                    children=[
+                        html.Em(
+                            "Visualiser les tendances des accidents de la route", 
+                            style={'fontSize': '30px'},
+                        ),
+                    ],
+                    style={
+                        'fontFamily': 'Lato, sans-serif',
+                        'fontWeight': 'bold',
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.P(
-                    'Ce tableau de bord offre un aperçu des accidents de la route, incluant les tendances temporelles, les conditions des accidents et leur gravité. Explorez les données à l’aide de visualisations interactives.'
+                    'Ce tableau de bord offre un aperçu des accidents de la route, incluant les tendances temporelles, les conditions des accidents et leur gravité. Explorez les données à l’aide de visualisations interactives.',
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
                 ),
                 # Temporal Series
+                html.H3('Selon plusieurs échelles temporelles'),
+                html.P(
+                    'Cette visualisation a pour objectif d’analyser la répartition temporelle des accidents de la route selon différents critères : l’heure de la journée, le jour de la semaine, le mois et l’année. En identifiant les périodes les plus à risque, nous visons à sensibiliser les usagers de la route et à orienter les actions de prévention.',
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.Div(
                     id='temporal-section',
                     className='chart-container',
@@ -196,65 +161,108 @@ app.layout = html.Div(
                         html.Div(
                             className='chart-section',
                             children=[
-                                html.H3('Série temporelle des accidents de la route', style={'justify-content': 'center'}),
                                 dcc.Graph(
                                     id='temporal-series',
                                     className='graph',
-                                    figure=temporal_fig,
+                                    figure=create_temporal_series(dataframe),
                                     config=dict(
+                                        displayModeBar=True,
+                                        displaylogo=False,
                                         scrollZoom=False,
                                         showTips=False,
                                         showAxisDragHandles=False,
-                                        doubleClick=False,
-                                        displayModeBar=True
+                                        doubleClick='reset',
+                                        modeBarButtonsToRemove=[
+                                            'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                            'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                            'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                        ],
+                                        modeBarButtonsToKeep=['zoom2d']
                                     )
                                 )
                             ]
                         ),
-                        html.Div(
-                            className='text-section',
-                            children=[
-                                html.P(
-                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-                                ),
-                                html.P(
-                                    'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
-                                ),
-                                html.P(
-                                    'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.'
-                                )
-                            ]
-                        )
+                        html.P(
+                            "Par heure, les accidents culminent entre 15h et 18h, heures de pointe associées aux retours à la maison. Par jour de semaine, le vendredi enregistre le plus grand nombre d’accidents, tandis que le dimanche est le jour le moins accidentogène. Par mois, le mois d’octobre montre un pic, possiblement lié à la baisse de luminosité et aux conditions météo variables. Par année, une hausse marquée est observée entre 2015 et 2019, suivie d’une relative stabilité.",
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
+                        html.P(
+                            "Cette analyse met en évidence des moments critiques où la prudence doit être redoublée, notamment en fin d’après-midi et les vendredis. Nous encourageons les conducteurs à adapter leur conduite aux conditions de circulation, à éviter les distractions et à prévoir des marges de sécurité accrues lors des périodes identifiées comme à risque. Une vigilance accrue peut contribuer à sauver des vies.",
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
                     ],
                     style={'scrollMarginTop': '100px'}
                 ),
+                html.Hr(className='divider'),
                 # Day Type Histogram
+                html.H3("Selon le type de jour de l'année"),
+                html.P(
+                    'Cette visualisation présente un histogramme comparant la moyenne quotidienne des accidents de la route selon trois types de jours : les jours ordinaires, les fins de semaine et les jours fériés. L’objectif est de dégager des tendances en fonction du calendrier et de mieux cibler les périodes à risque.',
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.Div(
                     id='histogram-section',
                     className='chart-container',
                     children=[
-                        html.H3('Moyenne des accidents selon le type de jour'),
                         dcc.Graph(
                             id='day-type-histogram',
                             className='graph',
-                            figure=histogram_fig,
+                            figure=create_day_type_histogram(dataframe),
                             config=dict(
+                                displayModeBar=True,
+                                displaylogo=False,
                                 scrollZoom=False,
                                 showTips=False,
                                 showAxisDragHandles=False,
-                                doubleClick=False,
-                                displayModeBar=True
+                                doubleClick='reset',
+                                modeBarButtonsToRemove=[
+                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                ],
+                                modeBarButtonsToKeep=['zoom2d']
                             )
-                        )
+                        ),
+                        html.P(
+                            "Les jours ordinaires présentent la moyenne d’accidents la plus élevée, probablement liée aux déplacements domicile-travail et à la densité du trafic. Les fins de semaine affichent une moyenne légèrement inférieure, mais restent élevées, peut-être en raison des déplacements récréatifs ou festifs. Les jours fériés enregistrent la plus faible moyenne, ce qui pourrait s’expliquer par une circulation réduite.",
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
+                        html.P(
+                            "Bien que les jours fériés soient les moins accidentogènes, les jours ordinaires et les fins de semaine demeurent des périodes critiques nécessitant vigilance et prudence.",
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
                     ],
                     style={'scrollMarginTop': '100px'}
                 ),
+                html.Hr(className='divider'),
                 # Radar Charts
+                html.H3("Selon les conditions d'éclairage et de météo et la gravité des blessures"),
+                html.P(
+                    'Cette série de visualisations examine comment les conditions d’éclairage (plein jour, crépuscule, nuit éclairée ou sombre) et les conditions météorologiques (dégagé, nuageux, pluie, neige) influencent à la fois le nombre et la gravité des accidents de la route.',
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.Div(
                     id='radar-section',
                     className='chart-container',
                     children=[
-                        html.H3("Nombre et gravité des accidents selon les conditions d'éclairage et de météo"),
                         html.Div(
                             children=create_radar_charts(dataframe)[0],
                             style={
@@ -266,8 +274,15 @@ app.layout = html.Div(
                                 'width': '100%',
                             }
                         ),
+                        html.P(
+                            'En plein jour, malgré une visibilité optimale, le nombre d’accidents est le plus élevé, possiblement en raison d’un faux sentiment de sécurité, d’une densité de circulation accrue ou d’une vigilance réduite. La majorité des accidents surviennent sous un temps dégagé, indépendamment de l’éclairage.',
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
                         html.Div(
-                            children=create_radar_charts(dataframe)[1:],
+                            children=create_radar_charts(dataframe)[1:3],
                             style={
                                 'display': 'flex',
                                 'flexDirection': 'row',
@@ -276,109 +291,192 @@ app.layout = html.Div(
                                 'gap': '20px',
                                 'width': '100%',
                             }
-                        )
+                        ),
+                        html.P(
+                            'Les conditions extrêmes comme la neige ou la pluie sont associées à moins d’accidents, mais ceux-ci peuvent être plus graves. Peu importe les conditions, les accidents sans blessure dominent, mais des blessures mortelles ou incapacitantes surviennent dans tous les contextes.',
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
+                        html.Div(
+                            children=create_radar_charts(dataframe)[3:],
+                            style={
+                                'display': 'flex',
+                                'flexDirection': 'row',
+                                'justifyContent': 'space-evenly',
+                                'flexWrap': 'wrap',
+                                'gap': '20px',
+                                'width': '100%',
+                            }
+                        ),
+                        html.P(
+                            'Contrairement à l’intuition, ce ne sont pas les conditions difficiles qui génèrent le plus d’accidents, mais bien les situations perçues comme sécuritaires. Cela montre que la vigilance ne doit jamais être relâchée, même par beau temps ou en plein jour. Une conduite attentive en tout temps est essentielle pour réduire les risques.',
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
                     ],
                     style={'scrollMarginTop': '100px'}
                 ),
+                html.Hr(className='divider'),
                 # Heatmap
+                html.H3('Selon le type de collision et la gravité des blessures'),
+                html.P(
+                    'Cette heatmap illustre la relation entre cinq types de collision routière et la gravité des blessures résultantes, révélant clairement que la majorité des accidents n’entraînent pas de blessures visibles, indépendamment du type de collision.',
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.Div(
                     id='heatmap-section',
                     className='chart-container',
                     children=[
-                        html.H3('Matrice de chaleur des accidents par type de collision et gravité des blessures'),
                         dcc.Graph(
                             id='heatmap-chart',
                             className='graph',
                             figure=heatmap_fig,
                             config=dict(
+                                displayModeBar=True,
+                                displaylogo=False,
                                 scrollZoom=False,
                                 showTips=False,
                                 showAxisDragHandles=False,
-                                doubleClick=False,
-                                displayModeBar=True
+                                doubleClick='reset',
+                                modeBarButtonsToRemove=[
+                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                ],
+                                modeBarButtonsToKeep=['zoom2d']
                             )
+                        ),
+                        html.P(
+                            'Les collisions lors de virages (Turning) et à angle produisent le plus grand nombre d’accidents sans blessure apparente, suivies par les collisions par l’arrière, tandis que les accidents impliquant des piétons sont moins fréquents mais présentent une proportion plus élevée de blessures par rapport au nombre total d’incidents de ce type.',
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
+                        html.P(
+                            'Bien que la plupart des accidents ne causent pas de blessures graves, une attention particulière devrait être portée aux collisions en virage et aux intersections où des mesures d’infrastructure et de signalisation pourraient réduire considérablement le nombre d’accidents.',
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
                         ),
                     ],
                     style={'scrollMarginTop': '100px'}
                 ),
+                html.Hr(className='divider'),
                 # Pie/Bar Chart (Road Condition)
+                html.H3("Selon la condition de la chaussée et la gravité des blessures"),
+                html.P(
+                    'Cette visualisation établit le nombre de blessures en fonction de la condition de la chaussée.',
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.Div(
                     id='pie-bar1-section',
                     className='chart-container',
                     children=[
-                        html.H3("Nombre d'accidents selon la gravité des blessures et la condition de la chaussée"),
                         dcc.Graph(
                             id='pie-bar1-chart',
                             className='graph',
-                            figure=pie_bar_fig,
+                            figure=plot_condition_vs_injury(dataframe),
                             config=dict(
+                                displayModeBar=True,
+                                displaylogo=False,
                                 scrollZoom=False,
                                 showTips=False,
                                 showAxisDragHandles=False,
-                                doubleClick=False,
-                                displayModeBar=True
+                                doubleClick='reset',
+                                modeBarButtonsToRemove=[
+                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                ],
+                                modeBarButtonsToKeep=['zoom2d']
                             )
-                        )
+                        ),
+                        html.P(
+                            "Elle montre que la majorité des accidents se produit à l'approche d'une intersection, mais que ces accidents sont majoritairement sans blessure. Il en est de même en ce qui concerne la condition de la chaussée.",
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
                     ],
                     style={'scrollMarginTop': '100px'}
                 ),
+                html.Hr(className='divider'),
                 # Pie/Bar Chart (Intersection)
+                html.H3("Selon la présence/absence d'intersection et la gravité des blessures"),
+                html.P(
+                    "Cette visualisation établit le nombre de blessures en fonction de leur gravité selon s'il y a présence ou absence d'une intersection.",
+                    className='general-text',
+                    style={
+                        'marginTop': '1rem',
+                    }
+                ),
                 html.Div(
                     id='pie-bar2-section',
                     className='chart-container',
                     children=[
-                        html.H3("Nombre d'accidents selon la gravité des blessures et la présence/absence d'intersection"),
                         dcc.Graph(
                             id='pie-bar2-chart',
                             className='graph',
-                            figure=pie_bar2_fig,
+                            figure=plot_intersection_vs_injury(dataframe),
                             config=dict(
+                                displayModeBar=True,
+                                displaylogo=False,
                                 scrollZoom=False,
                                 showTips=False,
                                 showAxisDragHandles=False,
-                                doubleClick=False,
-                                displayModeBar=True
+                                doubleClick='reset',
+                                modeBarButtonsToRemove=[
+                                    'select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d',
+                                    'autoScale2d', 'resetScale2d', 'hoverClosestCartesian',
+                                    'hoverCompareCartesian', 'toggleSpikelines', 'toImage'
+                                ],
+                                modeBarButtonsToKeep=['zoom2d']
                             )
                         ),
+                        html.P(
+                            "Une attention particulière devrait être portée sur les blessures mortelles et incapacitantes en cas d'intersection et de chaussée sèche.",
+                            className='under-chart-text',
+                            style={
+                                'marginTop': '1rem',
+                            }
+                        ),
+                    ],
+                    style={'scrollMarginTop': '100px',}
+                ),
+                # Footer
+                html.Div(
+                    className="footer",
+                    children=[
                         html.Div(
+                            className="footer-text",
                             children=[
                                 html.P(
-                                    "Cette visualisation établit le nombre de blessures en fonction de leur gravité selon s'il y a présence ou absence d'une intersection d'une part et d'autre part selon la condition de la chaussée.",
-                                    style={
-                                        'fontFamily': 'Arial, Helvetica, sans-serif',
-                                        'fontSize': '14px',
-                                        'color': '#333',
-                                        'textAlign': 'justify',
-                                        'maxWidth': '85%'
-                                    }
+                                    children=[
+                                        html.Small("Toutes les données sont fournies à titre indicatif et doivent être utilisées avec discernement."),
+                                        html.Strong("Statistiques Canada - Statistic Canada"),
+                                        html.Br(),
+                                    ]
                                 ),
-                                html.P(
-                                    "Elle montre que la majorité des accidents se produit à l'approche d'une intersection, mais que ces accidents sont majoritairement sans blessure. Il en est de même en ce qui concerne la condition de la chaussée.",
-                                    style={
-                                        'fontFamily': 'Arial, Helvetica, sans-serif',
-                                        'fontSize': '14px',
-                                        'color': '#333',
-                                        'textAlign': 'justify',
-                                        'maxWidth': '85%'
-                                    }
-                                ),
-                                html.P(
-                                    "Une attention particulière devrait être portée sur les blessures mortelles et incapacitantes en cas d'intersection et de chaussée sèche.",
-                                    style={
-                                        'fontFamily': 'Arial, Helvetica, sans-serif',
-                                        'fontSize': '14px',
-                                        'color': '#333',
-                                        'textAlign': 'justify',
-                                        'maxWidth': '85%'
-                                    }
-                                )
-                            ],
-                            style={
-                                'marginTop': '30px'
-                            }
-                        )
-                    ],
-                    style={'scrollMarginTop': '100px', 'marginBottom': '60px'}
+                            ]
+                        ),
+                        html.Img(
+                            src='/assets/canada-logo.png',
+                            style={'height': '40px', 'marginTop': '1rem'}
+                        ),
+                    ]
                 ),
                 # JavaScript for chart visibility animation only
                 html.Script(

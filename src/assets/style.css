@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Lato, sans-serif;
     font-size: 16px;
     background-color: #fff;
     color: #333;
@@ -19,22 +21,22 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.85); 
+    background-color: rgba(255, 255, 255, 0.95); 
     z-index: -1; 
 }
 
 header {
-    width: 85%;
+    width: 90%;
     background-color: #fff;
-    padding: 20px 50px;
+    padding: 40px 50px 20px 50px;
     border-bottom: 2px solid #97939A;
-    margin: 0 auto 2rem auto;
+    /* margin: 0 auto 2rem auto; */
     text-align: left;
 }
 
 h1 {
     color: #333;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Lato, sans-serif;
     font-size: 36px;
     margin: 0;
     font-weight: bold;
@@ -43,37 +45,13 @@ h1 {
     padding-bottom: 10px;
 }
 
-h2 {
-    color: #333;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 24px;
-    font-weight: normal;
-    margin: 0.5rem 0;
-}
-
-h3 {
-    color: #333;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-    margin: 1rem 0;
-}
-
-button {
-    padding: 8px 20px;
-    color: #333;
-    background-color: #F5F5F5;
-    border: 1px solid #999;
-    border-radius: 0;
-    cursor: pointer;
-    outline: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    margin-right: 5px;
-}
-
-button:hover, button:active {
-    background: #E5E5E5;
+.header-nav-button {
+    color: white;
+    text-decoration: none;
+    /* border-right: 1px solid white;
+    border-left: 1px solid white; */
+    padding: 10px 15px;
+    cursor: default;
 }
 
 .content {
@@ -83,29 +61,147 @@ button:hover, button:active {
     width: 85%;
     margin: 0 auto;
     padding: 0 20px;
+    background-color: rgba(255, 255, 255, 0.5); 
 }
 
 .viz-container {
     flex-direction: column;
     display: flex;
-    padding: 1rem 0;
+    /* padding: 1rem 0; */
     align-items: flex-start;
-    gap: 2rem;
+    /* gap: 2rem; */
+}
+
+.nav-bar {
+    width: 101%;
+}
+
+.nav-button {
+    border-right: 1px solid white;
+    border-left: 1px solid white;
+    border-radius: 0;
+    font-family: Lato, sans-serif;
+    padding: 8px 23.7px;
+    color: white;
+    background-color: #284162;
+    text-decoration: none;
+    font-size: 13px;
+    /* box-shadow: #333 0px 0px 10px; */
+    cursor: 'pointer';
+}
+
+.nav-button:hover {
+    background-color: #4577b8;
+    color: white;
 }
 
 .chart-container {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 60px;
-    border-bottom: 1px solid #E5E5E5;
+    margin-bottom: 1rem;
+    /* border-bottom: 1px solid #E5E5E5; */
     padding-bottom: 20px;
     padding: 20px;
 }
 
+h2 {
+    color: #08244f;
+    font-family: Lato, sans-serif;
+    font-size: 24px;
+    font-weight: normal;
+    margin: 1rem 3rem;
+    /* background-color: #E5E5E5; */
+}
+
+h3 {
+    color: #031732;
+    font-family: Lato, sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 2rem 3rem 1rem;
+}
+
 .graph {
-    width: 100%;
-    max-width: 1200px; 
-    margin: 0 auto; 
+    width: 90%;
+    margin: 0 2rem;
+    /* background-color: #E5E5E5; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.general-text {
+    /* background-color: #E5E5E5; */
+    width: 90%;
+    margin: 0 3rem;
+    font-family: Lato, sans-serif;
+    color: rgb(89, 89, 89);
+    line-height: 1.5;
+}
+
+.under-chart-text {
+    /* background-color: #E5E5E5; */
+    width: 90%;
+    margin: 0 2rem;
+    font-family: Lato, sans-serif;
+    color: rgb(89, 89, 89);
+    line-height: 1.5;
+}
+
+.big-divider {
+    width: 90%;
+    margin: 1rem auto;
+    border-bottom: 1px solid rgb(152, 0, 0);
+}
+
+.divider {
+    width: 90%;
+    margin: 0 auto;
+    border-bottom: 1px solid #e5e5e5c4;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #284162;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-family: Lato, sans-serif;
+    font-size: 14px;
+    position: relative;
+    bottom: 0;
+    width: 95%;
+    margin-top: 2rem;
+}
+
+.footer a {
+    color: #F0A500;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.footer p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Adding the footer content */
+.footer .logo {
+    width: 120px;
+    margin-bottom: 10px;
+}
+
+/* Additional space for the footer content */
+.footer .footer-text {
+    margin-top: 10px;
+}
+
+.footer .footer-text small {
+    display: block;
+    margin-top: 5px;
 }
