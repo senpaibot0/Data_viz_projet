@@ -27,6 +27,9 @@ def create_temporal_series(df):
                    7: 'Juil', 8: 'Août', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Déc'}
     df['month_name'] = df['month'].map(month_names)
 
+    # Get available years
+    available_years = sorted(df['year'].unique())
+
     fig = make_subplots(
         rows=2, cols=2,
         specs=[[{'type': 'scatter'}, {'type': 'scatter'}],
@@ -36,77 +39,95 @@ def create_temporal_series(df):
         horizontal_spacing=0.08
     )
 
-    hour_counts = df.groupby('hour').size()
-    fig.add_trace(
-        go.Scatter(
-            x=hour_counts.index, 
-            y=hour_counts.values, 
-            mode='lines+markers', 
-            name='Par heure', 
-            line=dict(width=2, color=line_colors['Par heure']),
-            hovertemplate='<b>%{x}h</b><br>%{y} accidents<extra></extra>',
-            hoverlabel=dict(bgcolor=line_colors['Par heure'], font=dict(color='white', family="Lato, sans-serif")),
-        ), 
-        row=1, col=1,
-    )
-    fig.update_xaxes(title_text="Heure", row=1, col=1)
-    fig.update_yaxes(title_text="Nombre d'accidents", row=1, col=1)
+    # Create traces for each year
+    buttons = []
+    for i, year in enumerate(available_years):
+        year_data = df[df['year'] == year]
+        visible = (i == 0)  # Only the first year is visible initially
 
-    day_counts = df['day_of_week'].value_counts().sort_index()
-    days_short = [day_names[d] for d in day_counts.index]
-    days_full = [day_names_full[d] for d in day_counts.index]
+        # 1. Par heure
+        hour_counts = year_data.groupby('hour').size()
+        fig.add_trace(
+            go.Scatter(
+                x=list(range(24)),
+                y=[hour_counts.get(hour, 0) for hour in range(24)],
+                mode='lines+markers',
+                name=f'Par heure ({year})',
+                line=dict(width=2, color=line_colors['Par heure']),
+                hovertemplate='<b>%{x}h</b><br>%{y} accidents<extra></extra>',
+                hoverlabel=dict(bgcolor=line_colors['Par heure'], font=dict(color='white', family="Lato, sans-serif")),
+                visible=visible
+            ),
+            row=1, col=1
+        )
 
-    day_counts = df['day_of_week'].value_counts().sort_index()
-    fig.add_trace(
-        go.Scatter(
-            x=[day_names[d] for d in day_counts.index], 
-            y=day_counts.values, 
-            mode='lines+markers', 
-            name='Par jour', 
-            line=dict(width=2, color=line_colors['Par jour']),
-            customdata=[[d] for d in days_full],
-            hovertemplate='<b>%{customdata[0]}</b><br>%{y} accidents<extra></extra>',
-            hoverlabel=dict(bgcolor=line_colors['Par jour'], font=dict(color='white', family="Lato, sans-serif")),
-        ), 
-        row=1, col=2,
-    ),
-    fig.update_xaxes(title_text="Jour de la semaine", row=1, col=2)
-    fig.update_yaxes(title_text="Nombre d'accidents", row=1, col=2)
+        # 2. Par jour de semaine
+        day_counts = year_data['day_of_week'].value_counts().sort_index()
+        days = list(day_names.keys())
+        days_short = [day_names[d] for d in days]
+        days_full = [day_names_full[d] for d in days]
+        fig.add_trace(
+            go.Scatter(
+                x=days_short,
+                y=[day_counts.get(d, 0) for d in days],
+                mode='lines+markers',
+                name=f'Par jour ({year})',
+                line=dict(width=2, color=line_colors['Par jour']),
+                customdata=[[d] for d in days_full],
+                hovertemplate='<b>%{customdata[0]}</b><br>%{y} accidents<extra></extra>',
+                hoverlabel=dict(bgcolor=line_colors['Par jour'], font=dict(color='white', family="Lato, sans-serif")),
+                visible=visible
+            ),
+            row=1, col=2
+        )
 
-    month_counts = df['month'].value_counts().sort_index()
-    months_full = [month_names_full[m] for m in month_counts.index]
+        # 3. Par mois
+        month_counts = year_data['month'].value_counts().sort_index()
+        months = list(month_names.keys())
+        months_short = [month_names[m] for m in months]
+        months_full = [month_names_full[m] for m in months]
+        fig.add_trace(
+            go.Scatter(
+                x=months_short,
+                y=[month_counts.get(m, 0) for m in months],
+                mode='lines+markers',
+                name=f'Par mois ({year})',
+                line=dict(width=2, color=line_colors['Par mois']),
+                customdata=[[m] for m in months_full],
+                hovertemplate='<b>%{customdata[0]}</b><br>%{y} accidents<extra></extra>',
+                hoverlabel=dict(bgcolor=line_colors['Par mois'], font=dict(color='white', family="Lato, sans-serif")),
+                visible=visible
+            ),
+            row=2, col=1
+        )
 
-    month_counts = df['month'].value_counts().sort_index()
-    fig.add_trace(
-        go.Scatter(
-            x=[month_names[m] for m in month_counts.index], 
-            y=month_counts.values, 
-            mode='lines+markers', 
-            name='Par mois', 
-            line=dict(width=2, color=line_colors['Par mois']),
-            customdata=[[m] for m in months_full],
-            hovertemplate='<b>%{customdata[0]}</b><br>%{y} accidents<extra></extra>',
-            hoverlabel=dict(bgcolor=line_colors['Par mois'], font=dict(color='white', family="Lato, sans-serif")),
-        ), row=2, col=1,
-    ),
-    fig.update_xaxes(title_text="Mois", row=2, col=1)
-    fig.update_yaxes(title_text="Nombre d'accidents", row=2, col=1)
+        # Create button for this year
+        visibility = [False] * (len(available_years) * 3)  # 3 traces per year
+        visibility[i*3:(i+1)*3] = [True, True, True]  # Enable the 3 traces for this year
+        buttons.append(dict(
+            method='update',
+            args=[{'visible': visibility + [True]},  # Keep 'Par année' always visible
+                  {'title': f'Séries temporelles des accidents de la route - {year}'}],
+            label=str(year)
+        ))
 
+    # 4. Par année (always visible)
     year_counts = df['year'].value_counts().sort_index()
     fig.add_trace(
         go.Scatter(
-            x=year_counts.index, 
-            y=year_counts.values, 
-            mode='lines+markers', 
-            name='Par année', 
+            x=year_counts.index,
+            y=year_counts.values,
+            mode='lines+markers',
+            name='Par année',
             line=dict(width=2, color=line_colors['Par année']),
             hovertemplate='<b>%{x}</b><br>%{y} accidents<extra></extra>',
             hoverlabel=dict(bgcolor=line_colors['Par année'], font=dict(color='white', family="Lato, sans-serif")),
-        ), row=2, col=2,
-    ),
-    fig.update_xaxes(title_text="Année", row=2, col=2)
-    fig.update_yaxes(title_text="Nombre d'accidents", row=2, col=2)
+            visible=True
+        ),
+        row=2, col=2
+    )
 
+    # Update layout with dropdown shifted to the right
     fig.update_layout(
         title="",
         height=600,
@@ -124,6 +145,38 @@ def create_temporal_series(df):
             size=12,
             color="#031732",
         ),
+        updatemenus=[dict(
+            buttons=buttons,
+            direction="down",
+            pad={"r": 10, "t": 10},
+            showactive=True,
+            x=0.5,  
+            xanchor="right",
+            y=1.15,
+            yanchor="top"
+        )]
     )
+
+ 
+    fig.add_annotation(
+        x=0.88,
+        y=1.12,
+        xref="paper",
+        yref="paper",
+        text="Année:",
+        showarrow=False,
+        font=dict(size=12),
+        align="right"
+    )
+
+    # Update axes
+    fig.update_xaxes(title_text="Heure", row=1, col=1)
+    fig.update_yaxes(title_text="Nombre d'accidents", row=1, col=1)
+    fig.update_xaxes(title_text="Jour de la semaine", row=1, col=2)
+    fig.update_yaxes(title_text="Nombre d'accidents", row=1, col=2)
+    fig.update_xaxes(title_text="Mois", row=2, col=1)
+    fig.update_yaxes(title_text="Nombre d'accidents", row=2, col=1)
+    fig.update_xaxes(title_text="Année", row=2, col=2)
+    fig.update_yaxes(title_text="Nombre d'accidents", row=2, col=2)
 
     return fig
