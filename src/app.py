@@ -381,7 +381,7 @@ app.layout = html.Div(
                 # Pie/Bar Chart (Road Condition)
                 html.H3("Nombre de blessures selon la condition de la chaussée et la gravité des blessures"),
                 html.P(
-                    'Pour étudier le risque potentiel de blessure et sa gravité selon l'état de la chaussée, cette visualisation établit le nombre de blessures associé à ces deux éléments.',
+                    "Pour étudier le risque potentiel de blessure et sa gravité selon l'état de la chaussée, cette visualisation établit le nombre de blessures associé à ces deux éléments.",
                     className='general-text',
                     style={
                         'marginTop': '1rem',
@@ -427,7 +427,7 @@ app.layout = html.Div(
                 ),
                 html.Hr(className='divider'),
                 # Pie/Bar Chart (Intersection)
-                html.H3("Selon la présence/absence d'intersection et la gravité des blessures"),
+                html.H3("Nombre d'accidents selon la présence/absence d'intersection et la gravité des blessures"),
                 html.P(
                     "Cette visualisation établit le nombre de blessures en fonction de leur gravité selon s'il y a présence ou absence d'une intersection. Elle vise à dégager comme le montre les graphiques le danger que court les automobilistes à l'approche d'une intersection.",
                     className='general-text',
